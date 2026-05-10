@@ -132,10 +132,19 @@
             <span class="audio-label">🔊</span>
             <input type="range" class="audio-slider" id="volumeSlider"
                    min="0" max="1" step="0.05" value="0.5">
+            <span class="audio-label" id="volPct" style="min-width:28px;font-size:6px">50%</span>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button class="audio-toggle-btn" id="muteBtn">🔇 Mute</button>
-            <button class="audio-toggle-btn" id="bgmBtn">🎵 BGM</button>
+            <button class="audio-toggle-btn" id="bgmBtn" title="Lofi kawaii BGM — synthesized in browser">🎵 BGM</button>
+          </div>
+          <div id="bgmVisualizer" style="display:none;align-items:flex-end;gap:2px;height:20px;padding-top:4px">
+            <span class="bgm-bar" style="width:4px;background:var(--pink);border:1px solid var(--ink);animation:bgmBar 0.6s ease-in-out infinite"></span>
+            <span class="bgm-bar" style="width:4px;background:var(--mint);border:1px solid var(--ink);animation:bgmBar 0.6s 0.1s ease-in-out infinite"></span>
+            <span class="bgm-bar" style="width:4px;background:var(--yellow);border:1px solid var(--ink);animation:bgmBar 0.6s 0.2s ease-in-out infinite"></span>
+            <span class="bgm-bar" style="width:4px;background:var(--lavender);border:1px solid var(--ink);animation:bgmBar 0.6s 0.3s ease-in-out infinite"></span>
+            <span class="bgm-bar" style="width:4px;background:var(--pink);border:1px solid var(--ink);animation:bgmBar 0.6s 0.15s ease-in-out infinite"></span>
+            <span style="font-family:'Press Start 2P',monospace;font-size:6px;color:#aaa;margin-left:4px">lofi ♪</span>
           </div>
         </div>
 
@@ -329,6 +338,7 @@ const Dashboard = (() => {
     // Audio controls
     document.getElementById('volumeSlider').addEventListener('input', (e) => {
       AudioMgr.setVolume(e.target.value);
+      document.getElementById('volPct').textContent = Math.round(e.target.value * 100) + '%';
     });
     document.getElementById('muteBtn').addEventListener('click', () => {
       const muted = AudioMgr.toggleMute();
@@ -336,7 +346,9 @@ const Dashboard = (() => {
     });
     document.getElementById('bgmBtn').addEventListener('click', () => {
       const playing = AudioMgr.toggleBGM();
-      document.getElementById('bgmBtn').textContent = playing ? '⏸ BGM' : '🎵 BGM';
+      document.getElementById('bgmBtn').textContent = playing ? '⏸ Stop' : '🎵 BGM';
+      const viz = document.getElementById('bgmVisualizer');
+      viz.style.display = playing ? 'flex' : 'none';
     });
 
     // Load audio settings
