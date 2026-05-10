@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📋 Dashboard — PixiDo</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/dashboard.css">
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="transition-logo">✨</div>
+  <div class="transition-dots">
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+  </div>
+</div>
+
+<!-- FLOATING DECORATIONS -->
+<div id="floatingHearts"></div>
+<div id="floatingStars"></div>
+<canvas id="particleCanvas"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar"></nav>
+
+<!-- =================== DASHBOARD =================== -->
+<div class="dashboard-wrap">
+  <div class="dashboard">
+
+    <!-- MAGICAL BANNER -->
+    <div class="pixel-banner">
+      <div>
+        <span class="banner-sparkles">✨</span>
+        <span class="banner-text" id="bannerText">Welcome Back!</span>
+        <span class="banner-sparkles">✨</span>
+      </div>
+      <div class="banner-sub" id="bannerSub">🌸 Cute Productivity Zone 🌸</div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card pink">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-card mint">
+        <div class="stat-num" id="statDone">0</div>
+        <div class="stat-label">Done ✓</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-num" id="statStreak">0</div>
+        <div class="stat-label">Streak 🔥</div>
+      </div>
+      <div class="stat-card lavender">
+        <div class="stat-num" id="statPoints">0</div>
+        <div class="stat-label">Points ⭐</div>
+      </div>
+    </div>
+
+    <div class="dash-layout">
+      <!-- ===== SIDEBAR ===== -->
+      <aside class="sidebar">
+
+        <!-- User profile card -->
+        <div class="sidebar-card">
+          <div class="sidebar-title">👤 Profile</div>
+          <div class="user-profile">
+            <div class="avatar" id="userAvatar">🐱</div>
+            <div class="username" id="profileUsername">username</div>
+            <div class="user-email" id="profileEmail">user@email.com</div>
+            <div class="streak-bar">🔥 <span id="streakText">0 day streak</span></div>
+          </div>
+        </div>
+
+        <!-- Quick navigation -->
+        <div class="sidebar-card">
+          <div class="sidebar-title">🗺️ Navigate</div>
+          <div class="sidebar-nav-links">
+            <a class="sidebar-nav-link" href="profile.html">👤 My Profile</a>
+            <a class="sidebar-nav-link" href="settings.html">⚙️ Settings</a>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="sidebar-card">
+          <div class="sidebar-title">📂 Categories</div>
+          <div class="category-list" id="categoryList">
+            <div class="category-item active" data-cat="all">
+              <span class="cat-dot" style="background:#ff9dbb;border:2px solid #333"></span> All
+              <span class="cat-count" id="catCount-all">0</span>
+            </div>
+            <div class="category-item" data-cat="personal">
+              <span class="cat-dot" style="background:#c7ceea;border:2px solid #333"></span> Personal
+              <span class="cat-count" id="catCount-personal">0</span>
+            </div>
+            <div class="category-item" data-cat="work">
+              <span class="cat-dot" style="background:#a8e6cf;border:2px solid #333"></span> Work
+              <span class="cat-count" id="catCount-work">0</span>
+            </div>
+            <div class="category-item" data-cat="study">
+              <span class="cat-dot" style="background:#ffd93d;border:2px solid #333"></span> Study
+              <span class="cat-count" id="catCount-study">0</span>
+            </div>
+            <div class="category-item" data-cat="health">
+              <span class="cat-dot" style="background:#ffb3ba;border:2px solid #333"></span> Health
+              <span class="cat-count" id="catCount-health">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="sidebar-card">
+          <div class="sidebar-title">🏆 Achievements</div>
+          <div class="achievements-row">
+            <div class="badge pink" id="badge-first" title="Complete your first task">⭐ First Star</div>
+            <div class="badge mint locked" id="badge-5" title="Complete 5 tasks">🌸 Bloomer</div>
+            <div class="badge yellow locked" id="badge-10" title="Complete 10 tasks">🔥 On Fire</div>
+            <div class="badge pink locked" id="badge-streak" title="3 day streak">💎 Streak</div>
+          </div>
+        </div>
+
+        <!-- Audio controls -->
+        <div class="sidebar-card audio-panel">
+          <div class="sidebar-title" style="padding:0 0 8px 0;border-bottom:2px solid #eee">🎵 Audio</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="audio-label">🔊</span>
+            <input type="range" class="audio-slider" id="volumeSlider"
+                   min="0" max="1" step="0.05" value="0.5">
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="audio-toggle-btn" id="muteBtn">🔇 Mute</button>
+            <button class="audio-toggle-btn" id="bgmBtn">🎵 BGM</button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ===== MAIN TODO PANEL ===== -->
+      <main class="todo-panel">
+        <!-- Header + Search -->
+        <div class="panel-header">
+          <span class="panel-title">📋 My Tasks</span>
+          <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" id="searchInput" placeholder="Search tasks..." aria-label="Search tasks">
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-wrap">
+          <div class="progress-label">Progress — <span id="progressPct">0%</span></div>
+          <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Task input -->
+        <div class="input-section">
+          <div class="input-row">
+            <input class="task-input" type="text" id="newTaskInput"
+                   placeholder="Add a cute new task... 🌸" maxlength="120"
+                   aria-label="New task">
+            <select class="priority-select" id="newPriority" aria-label="Priority">
+              <option value="low">🟢 Low</option>
+              <option value="medium" selected>🟡 Med</option>
+              <option value="high">🔴 High</option>
+            </select>
+            <select class="cat-select" id="newCat" aria-label="Category">
+              <option value="personal">Personal</option>
+              <option value="work">Work</option>
+              <option value="study">Study</option>
+              <option value="health">Health</option>
+            </select>
+            <button class="add-task-btn" id="addTaskBtn">➕ Add</button>
+          </div>
+          <!-- Filter bar -->
+          <div class="filter-bar" role="group" aria-label="Filter tasks">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="done">Done ✓</button>
+            <button class="filter-btn" data-filter="high">🔴 High</button>
+          </div>
+        </div>
+
+        <!-- Task list -->
+        <ul class="task-list" id="taskList" aria-label="Task list"></ul>
+
+        <!-- Panel footer -->
+        <div class="panel-footer">
+          <span class="panel-footer-text" id="taskCountText">0 tasks</span>
+          <button class="clear-btn" id="clearDoneBtn">🧹 Clear Done</button>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay hidden" id="editModal" role="dialog" aria-modal="true" aria-label="Edit task">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Edit Task</div>
+    <div class="modal-body">
+      <input class="modal-input" type="text" id="editInput"
+             placeholder="Edit your task..." maxlength="120" aria-label="Edit task text">
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <select class="priority-select" id="editPriority" style="flex:1" aria-label="Priority">
+          <option value="low">🟢 Low</option>
+          <option value="medium">🟡 Medium</option>
+          <option value="high">🔴 High</option>
+        </select>
+        <select class="cat-select" id="editCat" style="flex:1" aria-label="Category">
+          <option value="personal">Personal</option>
+          <option value="work">Work</option>
+          <option value="study">Study</option>
+          <option value="health">Health</option>
+        </select>
+      </div>
+      <div class="modal-btns">
+        <button class="modal-btn cancel" id="modalCancelBtn">Cancel</button>
+        <button class="modal-btn confirm" id="modalSaveBtn">✓ Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PIXEL MASCOT STRIP -->
+<div class="mascot-strip" id="mascotStrip">
+  <span class="mascot-pixel">🐱</span>
+  <span class="mascot-pixel">🌸</span>
+  <span class="mascot-pixel">⭐</span>
+</div>
+
+<script src="../components/db.js"></script>
+<script src="../components/ui.js"></script>
+<script>
+// ============================================================
+//  DASHBOARD APP
+// ============================================================
+const Dashboard = (() => {
+  let currentUser = null;
+  let tasks = [];
+  let meta = { points: 0, streak: 0, lastActive: null, completedTotal: 0 };
+  let currentFilter = 'all';
+  let currentCategory = 'all';
+  let editingId = null;
+
+  const BANNERS = [
+    '🌸 Stay Cozy & Productive 🌸',
+    '⭐ You\'re doing amazing! ⭐',
+    '💖 Kawaii Productivity Zone 💖',
+    '✨ One task at a time ✨',
+    '🍀 You\'ve got this! 🍀',
+  ];
+
+  // ---- INIT ----
+  const init = () => {
+    const session = DB.getSession();
+    if (!session) {
+      window.location.replace('login.html');
+      return;
+    }
+
+    currentUser = session;
+    tasks = DB.getTasks(session.uid);
+    meta  = DB.getMeta(session.uid);
+
+    initShared('dashboard');
+    setupEventListeners();
+    updateDashboard();
+
+    // Remove loading screen
+    setTimeout(() => {
+      const ls = document.getElementById('loading-screen');
+      if (ls) { ls.style.opacity = '0'; setTimeout(() => ls.remove(), 500); }
+    }, 800);
+  };
+
+  // ---- EVENT LISTENERS ----
+  const setupEventListeners = () => {
+    // Add task
+    document.getElementById('addTaskBtn').addEventListener('click', addTask);
+    document.getElementById('newTaskInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', renderTasks);
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderTasks();
+      });
+    });
+
+    // Category items
+    document.querySelectorAll('.category-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        currentCategory = item.dataset.cat;
+        renderTasks();
+      });
+    });
+
+    // Clear done
+    document.getElementById('clearDoneBtn').addEventListener('click', clearCompleted);
+
+    // Modal
+    document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+    document.getElementById('modalSaveBtn').addEventListener('click', saveEdit);
+    document.getElementById('editModal').addEventListener('click', (e) => {
+      if (e.target.id === 'editModal') closeModal();
+    });
+    document.getElementById('editInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveEdit();
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Audio controls
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+      AudioMgr.setVolume(e.target.value);
+    });
+    document.getElementById('muteBtn').addEventListener('click', () => {
+      const muted = AudioMgr.toggleMute();
+      document.getElementById('muteBtn').textContent = muted ? '🔊 Unmute' : '🔇 Mute';
+    });
+    document.getElementById('bgmBtn').addEventListener('click', () => {
+      const playing = AudioMgr.toggleBGM();
+      document.getElementById('bgmBtn').textContent = playing ? '⏸ BGM' : '🎵 BGM';
+    });
+
+    // Load audio settings
+    const settings = DB.getSettings();
+    document.getElementById('volumeSlider').value = settings.volume || 0.5;
+    if (settings.muted) {
+      document.getElementById('muteBtn').textContent = '🔊 Unmute';
+    }
+  };
+
+  // ---- TASKS ----
+  const addTask = () => {
+    const input = document.getElementById('newTaskInput');
+    const text  = input.value.trim();
+    if (!text) {
+      input.focus();
+      input.style.borderColor = '#ff4444';
+      setTimeout(() => input.style.borderColor = '', 500);
+      return;
+    }
+
+    const task = {
+      id: Date.now() + '_' + Math.random().toString(36).slice(2),
+      text,
+      done: false,
+      priority: document.getElementById('newPriority').value,
+      category: document.getElementById('newCat').value,
+      created: new Date().toISOString(),
+    };
+    tasks.unshift(task);
+    saveTasks();
+    input.value = '';
+    AudioMgr.play('add');
+    spawnDeco('floatingStars', ['⭐','✨','💫'], 3);
+    notify('Task added! 🌸', '➕');
+    renderTasks();
+    updateStats();
+  };
+
+  const toggleTask = (id, x, y) => {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    task.done = !task.done;
+
+    if (task.done) {
+      meta.completedTotal = (meta.completedTotal || 0) + 1;
+      meta.points = (meta.points || 0) + 10;
+      DB.saveMeta(currentUser.uid, meta);
+      AudioMgr.play('complete');
+      confetti(x, y);
+      Particles.create(x, y, 20);
+      spawnDeco('floatingHearts', ['💖','🎉','⭐','🌸'], 5);
+      notify('Task complete! +10 pts 🎉', '✨');
+      checkAchievements();
+    } else {
+      meta.points = Math.max(0, (meta.points || 0) - 5);
+      DB.saveMeta(currentUser.uid, meta);
+      AudioMgr.play('click');
+    }
+    saveTasks();
+    renderTasks();
+    updateStats();
+  };
+
+  const deleteTask = (id, el) => {
+    const item = document.querySelector(`[data-id="${id}"]`);
+    if (item) {
+      item.classList.add('removing');
+      if (el) Particles.create(
+        el.getBoundingClientRect().left + 14,
+        el.getBoundingClientRect().top + 14,
+        10
+      );
+      setTimeout(() => {
+        tasks = tasks.filter(t => t.id !== id);
+        saveTasks();
+        renderTasks();
+        updateStats();
+      }, 320);
+    }
+    AudioMgr.play('delete');
+  };
+
+  const openEdit = (id) => {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    editingId = id;
+    document.getElementById('editInput').value = task.text;
+    document.getElementById('editPriority').value = task.priority;
+    document.getElementById('editCat').value = task.category;
+    document.getElementById('editModal').classList.remove('hidden');
+    document.getElementById('editInput').focus();
+  };
+
+  const saveEdit = () => {
+    if (!editingId) return;
+    const task = tasks.find(t => t.id === editingId);
+    if (task) {
+      const v = document.getElementById('editInput').value.trim();
+      if (!v) return;
+      task.text = v;
+      task.priority = document.getElementById('editPriority').value;
+      task.category = document.getElementById('editCat').value;
+    }
+    saveTasks();
+    closeModal();
+    renderTasks();
+    AudioMgr.play('click');
+    notify('Task updated! ✏️', '✨');
+  };
+
+  const closeModal = () => {
+    document.getElementById('editModal').classList.add('hidden');
+    editingId = null;
+  };
+
+  const clearCompleted = () => {
+    tasks = tasks.filter(t => !t.done);
+    saveTasks();
+    renderTasks();
+    updateStats();
+    notify('Cleared done tasks! 🧹', '✨');
+  };
+
+  const saveTasks = () => {
+    if (currentUser) DB.saveTasks(currentUser.uid, tasks);
+  };
+
+  // ---- RENDER ----
+  const renderTasks = () => {
+    const list = document.getElementById('taskList');
+    const search = document.getElementById('searchInput').value.toLowerCase();
+
+    let filtered = tasks.filter(t => {
+      if (currentCategory !== 'all' && t.category !== currentCategory) return false;
+      if (currentFilter === 'active' && t.done) return false;
+      if (currentFilter === 'done'   && !t.done) return false;
+      if (currentFilter === 'high'   && t.priority !== 'high') return false;
+      if (search && !t.text.toLowerCase().includes(search)) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = `
+        <li class="empty-state">
+          <span class="empty-icon">✨</span>
+          <div class="empty-text">No tasks here!<br>Add something cute 🌸</div>
+        </li>`;
+      return;
+    }
+
+    const pri = { high: 0, medium: 1, low: 2 };
+    filtered.sort((a, b) => (a.done - b.done) || (pri[a.priority] - pri[b.priority]));
+
+    list.innerHTML = filtered.map(t => {
+      const date = new Date(t.created).toLocaleDateString('en', { month: 'short', day: 'numeric' });
+      return `
+        <li class="task-item ${t.done ? 'completed-task' : ''}" data-id="${t.id}">
+          <div class="task-checkbox ${t.done ? 'checked' : ''}"
+               role="checkbox" aria-checked="${t.done}"
+               tabindex="0"
+               onclick="Dashboard.toggleTask('${t.id}', event.clientX, event.clientY)"
+               onkeydown="if(event.key==='Enter'||event.key===' ')Dashboard.toggleTask('${t.id}',0,0)">
+            ${t.done ? '✓' : ''}
+          </div>
+          <div class="task-content">
+            <div class="task-text">${escHtml(t.text)}</div>
+            <div class="task-meta">
+              <span class="priority-badge ${t.priority}">${t.priority.toUpperCase()}</span>
+              <span class="cat-badge">📂 ${t.category}</span>
+              <span class="task-date">${date}</span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn edit"
+                    onclick="Dashboard.openEdit('${t.id}')"
+                    title="Edit task" aria-label="Edit task">✏️</button>
+            <button class="task-action-btn delete"
+                    onclick="Dashboard.deleteTask('${t.id}', this)"
+                    title="Delete task" aria-label="Delete task">🗑️</button>
+          </div>
+        </li>`;
+    }).join('');
+  };
+
+  const escHtml = (s) => {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  };
+
+  // ---- STATS ----
+  const updateStats = () => {
+    const total = tasks.length;
+    const done  = tasks.filter(t => t.done).length;
+    const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statDone').textContent  = done;
+    document.getElementById('statStreak').textContent = meta.streak || 0;
+    document.getElementById('statPoints').textContent = meta.points || 0;
+    document.getElementById('progressPct').textContent = pct + '%';
+
+    const fill = document.getElementById('progressFill');
+    fill.style.width = pct + '%';
+    fill.parentElement.setAttribute('aria-valuenow', pct);
+
+    document.getElementById('taskCountText').textContent =
+      `${total} task${total !== 1 ? 's' : ''}`;
+
+    ['all','personal','work','study','health'].forEach(cat => {
+      const el = document.getElementById('catCount-' + cat);
+      if (el) el.textContent = cat === 'all'
+        ? tasks.length
+        : tasks.filter(t => t.category === cat).length;
+    });
+  };
+
+  const updateDashboard = () => {
+    if (!currentUser) return;
+
+    document.getElementById('userAvatar').textContent = currentUser.avatar || '🐱';
+    document.getElementById('profileUsername').textContent = currentUser.username;
+    document.getElementById('profileEmail').textContent = currentUser.email;
+    document.getElementById('streakText').textContent = (meta.streak || 0) + ' day streak';
+
+    document.getElementById('bannerText').textContent = 'Welcome Back, ' + currentUser.username + '!';
+    document.getElementById('bannerSub').textContent = BANNERS[Math.floor(Math.random() * BANNERS.length)];
+
+    updateStats();
+    renderTasks();
+    checkAchievements();
+  };
+
+  const checkAchievements = () => {
+    const total = meta.completedTotal || 0;
+    if (total >= 1)  document.getElementById('badge-first')?.classList.remove('locked');
+    if (total >= 5)  document.getElementById('badge-5')?.classList.remove('locked');
+    if (total >= 10) document.getElementById('badge-10')?.classList.remove('locked');
+    if ((meta.streak || 0) >= 3) document.getElementById('badge-streak')?.classList.remove('locked');
+  };
+
+  return { init, toggleTask, deleteTask, openEdit };
+})();
+
+document.addEventListener('DOMContentLoaded', Dashboard.init);
+</script>
+</body>
+</html>

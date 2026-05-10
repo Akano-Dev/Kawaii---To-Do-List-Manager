@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚙️ Settings — PixiDo</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/settings.css">
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="transition-logo">✨</div>
+  <div class="transition-dots">
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+  </div>
+</div>
+
+<!-- FLOATING DECORATIONS -->
+<div id="floatingHearts"></div>
+<div id="floatingStars"></div>
+<canvas id="particleCanvas"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar"></nav>
+
+<!-- =================== SETTINGS PAGE =================== -->
+<div class="settings-wrap">
+  <div class="settings-container">
+
+    <div class="settings-header">
+      <h1 class="settings-title">⚙️ Settings</h1>
+      <p class="settings-sub">Customize your kawaii experience 🌸</p>
+    </div>
+
+    <div class="settings-grid">
+
+      <!-- AUDIO SETTINGS -->
+      <div class="settings-card">
+        <div class="settings-card-header pink">
+          <span class="settings-card-icon">🎵</span>
+          <span class="settings-card-title">Audio Settings</span>
+        </div>
+        <div class="settings-body">
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Master Volume</div>
+              <div class="setting-desc">Controls all sound effects</div>
+            </div>
+            <div class="volume-row" style="flex:1;max-width:200px">
+              <span class="volume-icon">🔈</span>
+              <input type="range" class="volume-slider" id="masterVolume"
+                     min="0" max="100" step="5" value="50" aria-label="Master volume">
+              <span class="volume-icon">🔊</span>
+              <span class="volume-value" id="masterVolumeVal">50%</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">BGM Volume</div>
+              <div class="setting-desc">Background music level</div>
+            </div>
+            <div class="volume-row" style="flex:1;max-width:200px">
+              <span class="volume-icon">🎵</span>
+              <input type="range" class="volume-slider" id="bgmVolume"
+                     min="0" max="100" step="5" value="20" aria-label="BGM volume">
+              <span class="volume-value" id="bgmVolumeVal">20%</span>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Sound Effects</div>
+              <div class="setting-desc">Click, add, complete sounds</div>
+            </div>
+            <label class="toggle" aria-label="Toggle sound effects">
+              <input type="checkbox" id="sfxToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Mute All</div>
+              <div class="setting-desc">Silence everything</div>
+            </div>
+            <label class="toggle" aria-label="Toggle mute">
+              <input type="checkbox" id="muteToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Auto-play BGM</div>
+              <div class="setting-desc">Start music on login</div>
+            </div>
+            <label class="toggle" aria-label="Toggle auto-play BGM">
+              <input type="checkbox" id="bgmAutoToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- THEME SETTINGS -->
+      <div class="settings-card">
+        <div class="settings-card-header mint">
+          <span class="settings-card-icon">🎨</span>
+          <span class="settings-card-title">Theme Settings</span>
+        </div>
+        <div class="settings-body">
+
+          <div>
+            <div class="setting-label" style="margin-bottom:12px">Color Theme</div>
+            <div class="theme-grid" id="themeGrid">
+              <div class="theme-swatch kawaii active" data-theme="kawaii">
+                <div class="theme-swatch-preview"></div>
+                Kawaii
+              </div>
+              <div class="theme-swatch midnight" data-theme="midnight">
+                <div class="theme-swatch-preview"></div>
+                Midnight
+              </div>
+              <div class="theme-swatch forest" data-theme="forest">
+                <div class="theme-swatch-preview"></div>
+                Forest
+              </div>
+              <div class="theme-swatch sunset" data-theme="sunset">
+                <div class="theme-swatch-preview"></div>
+                Sunset
+              </div>
+              <div class="theme-swatch ocean" data-theme="ocean">
+                <div class="theme-swatch-preview"></div>
+                Ocean
+              </div>
+              <div class="theme-swatch sakura" data-theme="sakura">
+                <div class="theme-swatch-preview"></div>
+                Sakura
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="setting-label" style="margin-bottom:12px">Background Style</div>
+            <div class="bg-options" id="bgOptions">
+              <div class="bg-option active" data-bg="gradient">
+                <span class="bg-option-icon">🌈</span>
+                Gradient
+              </div>
+              <div class="bg-option" data-bg="stars">
+                <span class="bg-option-icon">⭐</span>
+                Starfield
+              </div>
+              <div class="bg-option" data-bg="clouds">
+                <span class="bg-option-icon">☁️</span>
+                Clouds
+              </div>
+              <div class="bg-option" data-bg="minimal">
+                <span class="bg-option-icon">🤍</span>
+                Minimal
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Animations</div>
+              <div class="setting-desc">Floating decorations & effects</div>
+            </div>
+            <label class="toggle" aria-label="Toggle animations">
+              <input type="checkbox" id="animToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Pixel Cursor</div>
+              <div class="setting-desc">Star cursor effect</div>
+            </div>
+            <label class="toggle" aria-label="Toggle pixel cursor">
+              <input type="checkbox" id="cursorToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ACCOUNT SETTINGS -->
+      <div class="settings-card">
+        <div class="settings-card-header yellow">
+          <span class="settings-card-icon">👤</span>
+          <span class="settings-card-title">Account Settings</span>
+        </div>
+        <div class="settings-body">
+
+          <div class="field-group" style="display:flex;flex-direction:column;gap:6px">
+            <label class="setting-label" for="settingsUsername">Display Name</label>
+            <input type="text" id="settingsUsername"
+                   style="padding:10px 12px;border:3px solid #2d2d2d;font-family:'Nunito',sans-serif;font-size:13px;background:#fff;box-shadow:inset 2px 2px 0 #ccc"
+                   placeholder="Your username" maxlength="20">
+          </div>
+
+          <div class="field-group" style="display:flex;flex-direction:column;gap:6px">
+            <label class="setting-label" for="settingsEmail">Email Address</label>
+            <input type="email" id="settingsEmail"
+                   style="padding:10px 12px;border:3px solid #2d2d2d;font-family:'Nunito',sans-serif;font-size:13px;background:#fff;box-shadow:inset 2px 2px 0 #ccc"
+                   placeholder="your@email.com">
+          </div>
+
+          <div>
+            <div class="setting-label" style="margin-bottom:8px">Choose Avatar</div>
+            <div id="avatarPicker" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Notifications</div>
+              <div class="setting-desc">In-app toast messages</div>
+            </div>
+            <label class="toggle" aria-label="Toggle notifications">
+              <input type="checkbox" id="notifToggle" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PRIVACY & DANGER ZONE -->
+      <div class="settings-card">
+        <div class="settings-card-header lavender">
+          <span class="settings-card-icon">🔐</span>
+          <span class="settings-card-title">Privacy & Data</span>
+        </div>
+        <div class="settings-body">
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Export Data</div>
+              <div class="setting-desc">Download your tasks as JSON</div>
+            </div>
+            <button class="modal-btn confirm" id="exportBtn" style="font-size:7px;padding:8px 12px">
+              📥 Export
+            </button>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-label-group">
+              <div class="setting-label">Import Data</div>
+              <div class="setting-desc">Restore from a backup file</div>
+            </div>
+            <label class="modal-btn confirm" style="font-size:7px;padding:8px 12px;cursor:pointer">
+              📤 Import
+              <input type="file" id="importFile" accept=".json" style="display:none">
+            </label>
+          </div>
+
+          <div class="danger-zone">
+            <div class="danger-title">⚠️ Danger Zone</div>
+            <p class="danger-desc">These actions are permanent and cannot be undone. Please be careful!</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="danger-btn" id="clearTasksBtn">🗑️ Clear All Tasks</button>
+              <button class="danger-btn" id="deleteAccountBtn">💀 Delete Account</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Save button -->
+    <button class="settings-save-btn" id="saveSettingsBtn">💾 Save Settings</button>
+
+  </div>
+</div>
+
+<!-- PIXEL MASCOT STRIP -->
+<div class="mascot-strip">
+  <span class="mascot-pixel">⚙️</span>
+  <span class="mascot-pixel">🌸</span>
+  <span class="mascot-pixel">✨</span>
+</div>
+
+<script src="../components/db.js"></script>
+<script src="../components/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Auth guard
+  const session = DB.getSession();
+  if (!session) {
+    window.location.replace('login.html');
+    return;
+  }
+
+  initShared('settings');
+
+  const settings = DB.getSettings();
+  const users = DB.getUsers();
+  const userData = users[session.uid];
+
+  // ---- Load current settings ----
+  document.getElementById('masterVolume').value = Math.round((settings.volume || 0.5) * 100);
+  document.getElementById('masterVolumeVal').textContent = Math.round((settings.volume || 0.5) * 100) + '%';
+  document.getElementById('bgmVolume').value = 20;
+  document.getElementById('bgmVolumeVal').textContent = '20%';
+  document.getElementById('sfxToggle').checked = settings.soundEffects !== false;
+  document.getElementById('muteToggle').checked = settings.muted || false;
+  document.getElementById('notifToggle').checked = settings.notifications !== false;
+  document.getElementById('animToggle').checked = true;
+  document.getElementById('cursorToggle').checked = true;
+
+  // Load account info
+  if (userData) {
+    document.getElementById('settingsUsername').value = userData.username || '';
+    document.getElementById('settingsEmail').value = userData.email || '';
+  }
+
+  // ---- Theme swatches ----
+  const activeTheme = settings.theme || 'kawaii';
+  document.querySelectorAll('.theme-swatch').forEach(sw => {
+    sw.classList.toggle('active', sw.dataset.theme === activeTheme);
+    sw.addEventListener('click', () => {
+      document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+    });
+  });
+
+  // ---- Background options ----
+  const activeBg = settings.background || 'gradient';
+  document.querySelectorAll('.bg-option').forEach(opt => {
+    opt.classList.toggle('active', opt.dataset.bg === activeBg);
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.bg-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+    });
+  });
+
+  // ---- Avatar picker ----
+  const AVATARS = ['🐱','🐰','🦊','🐸','🐻','🐼','🦄','🐶','🐨','🐯'];
+  const picker = document.getElementById('avatarPicker');
+  let selectedAvatar = session.avatar || '🐱';
+  AVATARS.forEach(av => {
+    const btn = document.createElement('button');
+    btn.textContent = av;
+    btn.style.cssText = `font-size:24px;padding:6px;border:3px solid ${av === selectedAvatar ? '#2d2d2d' : '#ddd'};background:${av === selectedAvatar ? 'var(--pink-pale)' : '#fff'};cursor:pointer;transition:all 0.1s`;
+    btn.addEventListener('click', () => {
+      selectedAvatar = av;
+      picker.querySelectorAll('button').forEach(b => {
+        b.style.borderColor = '#ddd';
+        b.style.background = '#fff';
+      });
+      btn.style.borderColor = '#2d2d2d';
+      btn.style.background = 'var(--pink-pale)';
+    });
+    picker.appendChild(btn);
+  });
+
+  // ---- Volume sliders ----
+  document.getElementById('masterVolume').addEventListener('input', (e) => {
+    document.getElementById('masterVolumeVal').textContent = e.target.value + '%';
+    AudioMgr.setVolume(e.target.value / 100);
+  });
+  document.getElementById('bgmVolume').addEventListener('input', (e) => {
+    document.getElementById('bgmVolumeVal').textContent = e.target.value + '%';
+  });
+
+  // ---- Export ----
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const tasks = DB.getTasks(session.uid);
+    const meta  = DB.getMeta(session.uid);
+    const data  = { username: session.username, tasks, meta, exportedAt: new Date().toISOString() };
+    const blob  = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url   = URL.createObjectURL(blob);
+    const a     = document.createElement('a');
+    a.href = url; a.download = 'pixido-backup.json'; a.click();
+    URL.revokeObjectURL(url);
+    notify('Data exported! 📥', '✨');
+  });
+
+  // ---- Import ----
+  document.getElementById('importFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (data.tasks) {
+          DB.saveTasks(session.uid, data.tasks);
+          notify('Tasks imported! 📤', '✨');
+        }
+      } catch {
+        notify('Invalid backup file! ❌', '😿');
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // ---- Danger zone ----
+  document.getElementById('clearTasksBtn').addEventListener('click', () => {
+    if (confirm('⚠️ Clear ALL tasks? This cannot be undone!')) {
+      DB.saveTasks(session.uid, []);
+      notify('All tasks cleared! 🗑️', '⚠️');
+    }
+  });
+
+  document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+    if (confirm('💀 Delete your account? ALL data will be lost forever!')) {
+      const users = DB.getUsers();
+      delete users[session.uid];
+      DB.saveUsers(users);
+      DB.clearSession();
+      notify('Account deleted. Goodbye! 👋', '💔');
+      setTimeout(() => { window.location.href = '../index.html'; }, 1000);
+    }
+  });
+
+  // ---- Save settings ----
+  document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+    const newSettings = {
+      volume: document.getElementById('masterVolume').value / 100,
+      muted: document.getElementById('muteToggle').checked,
+      soundEffects: document.getElementById('sfxToggle').checked,
+      notifications: document.getElementById('notifToggle').checked,
+      theme: document.querySelector('.theme-swatch.active')?.dataset.theme || 'kawaii',
+      background: document.querySelector('.bg-option.active')?.dataset.bg || 'gradient',
+    };
+    DB.saveSettings(newSettings);
+
+    // Update username/avatar if changed
+    const newUsername = document.getElementById('settingsUsername').value.trim();
+    if (newUsername && newUsername !== session.username) {
+      const users = DB.getUsers();
+      if (users[session.uid]) {
+        users[session.uid].username = newUsername;
+        DB.saveUsers(users);
+        const newSession = { ...session, username: newUsername, avatar: selectedAvatar };
+        DB.saveSession(newSession);
+      }
+    }
+
+    // Update avatar
+    if (selectedAvatar !== session.avatar) {
+      const users = DB.getUsers();
+      if (users[session.uid]) {
+        users[session.uid].avatar = selectedAvatar;
+        DB.saveUsers(users);
+        const newSession = { ...session, avatar: selectedAvatar };
+        DB.saveSession(newSession);
+      }
+    }
+
+    spawnDeco('floatingHearts', ['💖','⭐','✨'], 4);
+    notify('Settings saved! 💾', '✨');
+  });
+});
+</script>
+</body>
+</html>

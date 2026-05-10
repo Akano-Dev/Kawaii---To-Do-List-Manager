@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 Sign Up — PixiDo</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/auth.css">
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="transition-logo">✨</div>
+  <div class="transition-dots">
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+  </div>
+</div>
+
+<!-- FLOATING DECORATIONS -->
+<div id="floatingHearts"></div>
+<div id="floatingStars"></div>
+<canvas id="particleCanvas"></canvas>
+
+<!-- Floating background decorations -->
+<div class="auth-bg-deco" id="authBgDeco"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar"></nav>
+
+<!-- =================== SIGNUP PAGE =================== -->
+<main class="auth-page-wrap">
+  <div class="auth-box">
+    <!-- Titlebar -->
+    <div class="auth-titlebar">
+      <div class="auth-titlebar-dots">
+        <span class="preview-dot red"></span>
+        <span class="preview-dot yellow"></span>
+        <span class="preview-dot green"></span>
+      </div>
+      <span class="auth-titlebar-title">🌸 Create Account</span>
+    </div>
+
+    <div class="auth-body">
+      <!-- Mascot -->
+      <div class="auth-mascot" id="authMascot">🌸</div>
+
+      <!-- Success state (hidden initially) -->
+      <div class="auth-success" id="successState">
+        <span class="success-icon">🎉</span>
+        <div class="success-title">Welcome to PixiDo!</div>
+        <p class="success-sub">Your kawaii account is ready!<br>Redirecting to your dashboard... ✨</p>
+      </div>
+
+      <!-- Form state -->
+      <div id="formState">
+        <h1 class="auth-heading">Join PixiDo!</h1>
+        <p class="auth-subheading">Create your free kawaii productivity account 💖</p>
+
+        <!-- Error message -->
+        <div class="auth-error" id="signupError"></div>
+
+        <!-- Signup Form -->
+        <form class="auth-form" id="signupForm" novalidate>
+          <div class="field-group">
+            <label class="field-label" for="signupUser">🐱 Username</label>
+            <input class="field-input" type="text" id="signupUser"
+                   placeholder="kawaii_user" autocomplete="username"
+                   required minlength="3" maxlength="20">
+            <span class="field-hint">3–20 characters, letters and numbers only</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="signupEmail">📧 Email</label>
+            <input class="field-input" type="email" id="signupEmail"
+                   placeholder="your@email.com" autocomplete="email" required>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="signupPass">🔒 Password</label>
+            <input class="field-input" type="password" id="signupPass"
+                   placeholder="min 6 characters" autocomplete="new-password"
+                   required minlength="6">
+            <!-- Password strength indicator -->
+            <div class="password-strength">
+              <div class="strength-bar">
+                <div class="strength-fill" id="strengthFill"></div>
+              </div>
+              <div class="strength-text" id="strengthText">Enter a password</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="signupPassConfirm">🔒 Confirm Password</label>
+            <input class="field-input" type="password" id="signupPassConfirm"
+                   placeholder="repeat password" autocomplete="new-password" required>
+          </div>
+
+          <button class="auth-submit mint-btn" type="submit" id="signupBtn">
+            ✨ Create My Account
+          </button>
+        </form>
+
+        <!-- Switch to login -->
+        <div class="auth-switch" style="margin-top:20px">
+          Already have an account?
+          <a href="login.html">🔑 Log in</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pixel decoration dots -->
+    <div class="auth-pixel-deco">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+</main>
+
+<script src="../components/db.js"></script>
+<script src="../components/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Redirect if already logged in
+  if (DB.getSession()) {
+    window.location.replace('dashboard.html');
+    return;
+  }
+
+  initShared('signup');
+
+  // Spawn floating background decorations
+  const bgDeco = document.getElementById('authBgDeco');
+  const decoEmojis = ['🌸','⭐','💖','✨','🐱','🌷','💫','🎀','🦄','🍀'];
+  for (let i = 0; i < 14; i++) {
+    const span = document.createElement('span');
+    span.textContent = decoEmojis[Math.floor(Math.random() * decoEmojis.length)];
+    span.style.left = (Math.random() * 100) + '%';
+    span.style.animationDuration = (8 + Math.random() * 12) + 's';
+    span.style.animationDelay = (Math.random() * 10) + 's';
+    bgDeco.appendChild(span);
+  }
+
+  const mascot = document.getElementById('authMascot');
+
+  // Mascot changes on focus
+  document.getElementById('signupUser').addEventListener('focus', () => { mascot.textContent = '🐱'; });
+  document.getElementById('signupEmail').addEventListener('focus', () => { mascot.textContent = '📧'; });
+  document.getElementById('signupPass').addEventListener('focus', () => { mascot.textContent = '🔒'; });
+  document.getElementById('signupPassConfirm').addEventListener('focus', () => { mascot.textContent = '🔒'; });
+  ['signupUser','signupEmail','signupPass','signupPassConfirm'].forEach(id => {
+    document.getElementById(id).addEventListener('blur', () => { mascot.textContent = '🌸'; });
+  });
+
+  // Password strength checker
+  document.getElementById('signupPass').addEventListener('input', (e) => {
+    const val = e.target.value;
+    const fill = document.getElementById('strengthFill');
+    const text = document.getElementById('strengthText');
+
+    if (val.length === 0) {
+      fill.className = 'strength-fill';
+      text.textContent = 'Enter a password';
+    } else if (val.length < 6) {
+      fill.className = 'strength-fill weak';
+      text.textContent = '😿 Too short';
+    } else if (val.length < 10 || !/[0-9]/.test(val)) {
+      fill.className = 'strength-fill medium';
+      text.textContent = '🌸 Medium strength';
+    } else {
+      fill.className = 'strength-fill strong';
+      text.textContent = '💪 Strong password!';
+    }
+  });
+
+  // Username validation
+  document.getElementById('signupUser').addEventListener('input', (e) => {
+    const val = e.target.value;
+    const clean = val.replace(/[^a-zA-Z0-9_]/g, '');
+    if (val !== clean) e.target.value = clean;
+  });
+
+  // Form submission
+  document.getElementById('signupForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const username = document.getElementById('signupUser').value.trim();
+    const email    = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const password = document.getElementById('signupPass').value;
+    const confirm  = document.getElementById('signupPassConfirm').value;
+    const errEl    = document.getElementById('signupError');
+    const btn      = document.getElementById('signupBtn');
+
+    errEl.classList.remove('visible');
+    errEl.textContent = '';
+
+    // Validation
+    if (!username || !email || !password || !confirm) {
+      errEl.textContent = '❌ Please fill in all fields!';
+      errEl.classList.add('visible');
+      return;
+    }
+    if (username.length < 3) {
+      errEl.textContent = '❌ Username must be at least 3 characters!';
+      errEl.classList.add('visible');
+      return;
+    }
+    if (password.length < 6) {
+      errEl.textContent = '❌ Password must be at least 6 characters!';
+      errEl.classList.add('visible');
+      return;
+    }
+    if (password !== confirm) {
+      errEl.textContent = '❌ Passwords do not match!';
+      errEl.classList.add('visible');
+      mascot.textContent = '😿';
+      document.getElementById('signupPassConfirm').classList.add('error');
+      setTimeout(() => document.getElementById('signupPassConfirm').classList.remove('error'), 1500);
+      return;
+    }
+
+    btn.textContent = '⏳ Creating account...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      const result = DB.registerUser({ username, email, password });
+
+      if (result.error) {
+        errEl.textContent = '❌ ' + result.error;
+        errEl.classList.add('visible');
+        mascot.textContent = '😿';
+        btn.textContent = '✨ Create My Account';
+        btn.disabled = false;
+        return;
+      }
+
+      // Success!
+      document.getElementById('formState').style.display = 'none';
+      document.getElementById('successState').classList.add('visible');
+      spawnDeco('floatingHearts', ['💖','🌸','⭐','✨','🎉'], 10);
+      notify('Welcome to PixiDo, ' + username + '! 🌸', '✨');
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1800);
+    }, 500);
+  });
+});
+</script>
+</body>
+</html>

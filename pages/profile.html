@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👤 Profile — PixiDo</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/profile.css">
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="transition-logo">✨</div>
+  <div class="transition-dots">
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+  </div>
+</div>
+
+<!-- FLOATING DECORATIONS -->
+<div id="floatingHearts"></div>
+<div id="floatingStars"></div>
+<canvas id="particleCanvas"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar"></nav>
+
+<!-- =================== PROFILE PAGE =================== -->
+<div class="profile-wrap">
+  <div class="profile-container">
+
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <div class="profile-avatar-wrap">
+        <span class="profile-avatar" id="profileAvatar">🐱</span>
+        <span class="profile-level-badge" id="profileLevel">Lv.1</span>
+      </div>
+      <h1 class="profile-name" id="profileName">username</h1>
+      <p class="profile-email" id="profileEmailDisplay">user@email.com</p>
+      <p class="profile-bio" id="profileBio">Kawaii productivity enthusiast 🌸 Making tasks cute since 2025!</p>
+      <div class="profile-badges-row" id="profileBadgesRow">
+        <!-- Filled by JS -->
+      </div>
+      <a href="settings.html" class="edit-profile-btn">✏️ Edit Profile</a>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="profile-stats-grid">
+      <div class="profile-stat-card pink">
+        <span class="profile-stat-icon">📋</span>
+        <div class="profile-stat-num" id="statTotalTasks">0</div>
+        <div class="profile-stat-label">Total Tasks</div>
+      </div>
+      <div class="profile-stat-card mint">
+        <span class="profile-stat-icon">✅</span>
+        <div class="profile-stat-num" id="statCompleted">0</div>
+        <div class="profile-stat-label">Completed</div>
+      </div>
+      <div class="profile-stat-card yellow">
+        <span class="profile-stat-icon">🔥</span>
+        <div class="profile-stat-num" id="statStreak">0</div>
+        <div class="profile-stat-label">Day Streak</div>
+      </div>
+      <div class="profile-stat-card lavender">
+        <span class="profile-stat-icon">⭐</span>
+        <div class="profile-stat-num" id="statPoints">0</div>
+        <div class="profile-stat-label">Points</div>
+      </div>
+      <div class="profile-stat-card sky">
+        <span class="profile-stat-icon">📊</span>
+        <div class="profile-stat-num" id="statCompletionRate">0%</div>
+        <div class="profile-stat-label">Completion</div>
+      </div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">🏆</span>
+        <span class="profile-section-title">Achievements</span>
+      </div>
+      <div class="profile-section-body">
+        <div class="achievements-grid" id="achievementsGrid">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- STREAK CALENDAR -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">📅</span>
+        <span class="profile-section-title">Activity — Last 28 Days</span>
+      </div>
+      <div class="profile-section-body">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px">
+          <div class="streak-day-label">M</div>
+          <div class="streak-day-label">T</div>
+          <div class="streak-day-label">W</div>
+          <div class="streak-day-label">T</div>
+          <div class="streak-day-label">F</div>
+          <div class="streak-day-label">S</div>
+          <div class="streak-day-label">S</div>
+        </div>
+        <div class="streak-calendar" id="streakCalendar">
+          <!-- Filled by JS -->
+        </div>
+        <p style="font-size:10px;color:#aaa;margin-top:12px;font-family:'Press Start 2P',monospace">
+          🟩 Active day &nbsp; 🟪 Today
+        </p>
+      </div>
+    </div>
+
+    <!-- PRODUCTIVITY CHART -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">📈</span>
+        <span class="profile-section-title">Tasks by Category</span>
+      </div>
+      <div class="profile-section-body">
+        <div class="productivity-bars" id="categoryBars">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT ACTIVITY -->
+    <div class="profile-section">
+      <div class="profile-section-header">
+        <span class="profile-section-icon">⏰</span>
+        <span class="profile-section-title">Recent Completed Tasks</span>
+      </div>
+      <div class="profile-section-body">
+        <div id="recentActivity" style="display:flex;flex-direction:column;gap:8px">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PIXEL MASCOT STRIP -->
+<div class="mascot-strip">
+  <span class="mascot-pixel">👤</span>
+  <span class="mascot-pixel">🌸</span>
+  <span class="mascot-pixel">⭐</span>
+</div>
+
+<script src="../components/db.js"></script>
+<script src="../components/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Auth guard
+  const session = DB.getSession();
+  if (!session) {
+    window.location.replace('login.html');
+    return;
+  }
+
+  initShared('profile');
+
+  const tasks = DB.getTasks(session.uid);
+  const meta  = DB.getMeta(session.uid);
+
+  // ---- Profile hero ----
+  document.getElementById('profileAvatar').textContent = session.avatar || '🐱';
+  document.getElementById('profileName').textContent = session.username;
+  document.getElementById('profileEmailDisplay').textContent = session.email;
+
+  // Level calculation (every 100 points = 1 level)
+  const level = Math.max(1, Math.floor((meta.points || 0) / 100) + 1);
+  document.getElementById('profileLevel').textContent = 'Lv.' + level;
+
+  // ---- Stats ----
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(t => t.done).length;
+  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  document.getElementById('statTotalTasks').textContent = totalTasks;
+  document.getElementById('statCompleted').textContent = meta.completedTotal || 0;
+  document.getElementById('statStreak').textContent = meta.streak || 0;
+  document.getElementById('statPoints').textContent = meta.points || 0;
+  document.getElementById('statCompletionRate').textContent = completionRate + '%';
+
+  // ---- Profile badges row ----
+  const badgesRow = document.getElementById('profileBadgesRow');
+  const earnedBadges = [];
+  if ((meta.completedTotal || 0) >= 1)  earnedBadges.push('⭐ First Star');
+  if ((meta.completedTotal || 0) >= 5)  earnedBadges.push('🌸 Bloomer');
+  if ((meta.completedTotal || 0) >= 10) earnedBadges.push('🔥 On Fire');
+  if ((meta.streak || 0) >= 3)          earnedBadges.push('💎 Streak Master');
+  if (level >= 5)                        earnedBadges.push('🏆 Level 5');
+  if (earnedBadges.length === 0)         earnedBadges.push('🌱 Just Starting');
+
+  badgesRow.innerHTML = earnedBadges.map(b =>
+    `<span class="profile-badge">${b}</span>`
+  ).join('');
+
+  // ---- Achievements grid ----
+  const ACHIEVEMENTS = [
+    { id: 'first',   icon: '⭐', name: 'First Star',    desc: 'Complete your first task',    req: (meta.completedTotal || 0) >= 1 },
+    { id: 'five',    icon: '🌸', name: 'Bloomer',       desc: 'Complete 5 tasks',             req: (meta.completedTotal || 0) >= 5 },
+    { id: 'ten',     icon: '🔥', name: 'On Fire',       desc: 'Complete 10 tasks',            req: (meta.completedTotal || 0) >= 10 },
+    { id: 'twenty',  icon: '💫', name: 'Superstar',     desc: 'Complete 20 tasks',            req: (meta.completedTotal || 0) >= 20 },
+    { id: 'fifty',   icon: '🏆', name: 'Champion',      desc: 'Complete 50 tasks',            req: (meta.completedTotal || 0) >= 50 },
+    { id: 'streak3', icon: '💎', name: 'Streak Master', desc: '3 day streak',                 req: (meta.streak || 0) >= 3 },
+    { id: 'streak7', icon: '🌟', name: 'Week Warrior',  desc: '7 day streak',                 req: (meta.streak || 0) >= 7 },
+    { id: 'points',  icon: '💰', name: 'Point Hoarder', desc: 'Earn 100 points',              req: (meta.points || 0) >= 100 },
+    { id: 'level5',  icon: '🎖️', name: 'Level 5',       desc: 'Reach level 5',               req: level >= 5 },
+    { id: 'allcat',  icon: '🗂️', name: 'Organizer',     desc: 'Use all 4 categories',        req: ['personal','work','study','health'].every(c => tasks.some(t => t.category === c)) },
+  ];
+
+  document.getElementById('achievementsGrid').innerHTML = ACHIEVEMENTS.map(a => `
+    <div class="achievement-card ${a.req ? 'unlocked' : 'locked'}">
+      <span class="achievement-icon">${a.icon}</span>
+      <div class="achievement-name">${a.name}</div>
+      <div class="achievement-desc">${a.desc}</div>
+    </div>
+  `).join('');
+
+  // ---- Streak calendar (last 28 days) ----
+  const calendar = document.getElementById('streakCalendar');
+  const today = new Date();
+  const lastActive = meta.lastActive ? new Date(meta.lastActive) : null;
+
+  for (let i = 27; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const isToday = d.toDateString() === today.toDateString();
+    const isActive = lastActive && Math.abs(d - lastActive) < 86400000 * (meta.streak || 1);
+
+    const cell = document.createElement('div');
+    cell.className = 'streak-day' + (isToday ? ' today' : isActive && i < (meta.streak || 0) ? ' active' : '');
+    cell.title = d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+    calendar.appendChild(cell);
+  }
+
+  // ---- Category bars ----
+  const CATS = [
+    { key: 'personal', label: 'Personal', color: '#c7ceea' },
+    { key: 'work',     label: 'Work',     color: '#a8e6cf' },
+    { key: 'study',    label: 'Study',    color: '#ffd93d' },
+    { key: 'health',   label: 'Health',   color: '#ffb3ba' },
+  ];
+  const maxCount = Math.max(1, ...CATS.map(c => tasks.filter(t => t.category === c.key).length));
+
+  document.getElementById('categoryBars').innerHTML = CATS.map(c => {
+    const count = tasks.filter(t => t.category === c.key).length;
+    const pct = Math.round((count / maxCount) * 100);
+    return `
+      <div class="prod-bar-wrap">
+        <div class="prod-bar" style="height:${Math.max(4, pct * 0.7)}px;background:linear-gradient(180deg,${c.color},#ddd)"></div>
+        <div class="prod-bar-label">${c.label}</div>
+        <div class="prod-bar-label" style="color:#555">${count}</div>
+      </div>`;
+  }).join('');
+
+  // ---- Recent completed tasks ----
+  const recentDone = tasks
+    .filter(t => t.done)
+    .sort((a, b) => new Date(b.created) - new Date(a.created))
+    .slice(0, 5);
+
+  const recentEl = document.getElementById('recentActivity');
+  if (recentDone.length === 0) {
+    recentEl.innerHTML = `<p style="font-size:11px;color:#aaa;font-family:'Press Start 2P',monospace;text-align:center;padding:20px">No completed tasks yet!<br>🌸 Start checking things off!</p>`;
+  } else {
+    recentEl.innerHTML = recentDone.map(t => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #a8e6cf;background:#f0fdf5;box-shadow:0 2px 0 #ccc">
+        <span style="font-size:16px">✅</span>
+        <div style="flex:1">
+          <div style="font-size:12px;text-decoration:line-through;opacity:0.7">${t.text}</div>
+          <div style="font-size:9px;color:#aaa;font-family:'Press Start 2P',monospace;margin-top:3px">
+            ${new Date(t.created).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </div>
+        </div>
+        <span style="font-family:'Press Start 2P',monospace;font-size:6px;padding:2px 6px;border:1px solid #ccc;background:var(--pink-pale)">${t.category}</span>
+      </div>
+    `).join('');
+  }
+});
+</script>
+</body>
+</html>

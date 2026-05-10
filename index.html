@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ PixiDo — Kawaii Productivity ✨</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/landing.css">
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="loading-logo">✨ PixiDo ✨</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-text">Loading kawaii magic...</div>
+</div>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="transition-logo">✨</div>
+  <div class="transition-dots">
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+  </div>
+</div>
+
+<!-- FLOATING DECORATIONS -->
+<div id="floatingHearts"></div>
+<div id="floatingStars"></div>
+<canvas id="particleCanvas"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar"></nav>
+
+<!-- =================== HERO =================== -->
+<section class="hero">
+  <div class="cloud" style="animation-delay:0s">☁️</div>
+  <div class="cloud" style="animation-delay:-10s">☁️</div>
+  <div class="cloud" style="animation-delay:-5s">☁️</div>
+
+  <div class="hero-mascots">
+    <span class="mascot-hero">🐱</span>
+    <span class="mascot-hero" style="animation-delay:0.5s">🌸</span>
+    <span class="mascot-hero" style="animation-delay:1s">⭐</span>
+  </div>
+
+  <h1 class="hero-title">✨ Your Cutest<br>Productivity<br>Companion ✨</h1>
+  <p class="hero-sub">A pixel-perfect kawaii task manager that makes getting things done absolutely adorable. 💖</p>
+
+  <div class="hero-btns">
+    <a class="hero-cta main" href="pages/signup.html">🌸 Get Started Free</a>
+    <a class="hero-cta alt" href="#features">✨ See Features</a>
+  </div>
+
+  <!-- Animated preview window -->
+  <div class="preview-window" style="margin-top:48px">
+    <div class="preview-titlebar">
+      <span class="preview-dot red"></span>
+      <span class="preview-dot yellow"></span>
+      <span class="preview-dot green"></span>
+      <span class="preview-title-text">🐱 My Cute Tasks</span>
+    </div>
+    <div class="preview-body">
+      <div class="preview-task">
+        <div class="preview-check done">✓</div>
+        <span>🌷 Water the pixel plants</span>
+      </div>
+      <div class="preview-task done-task">
+        <div class="preview-check done">✓</div>
+        <span>💌 Reply to cute emails</span>
+      </div>
+      <div class="preview-task">
+        <div class="preview-check"></div>
+        <span>🍰 Bake strawberry cake</span>
+      </div>
+      <div class="preview-task">
+        <div class="preview-check"></div>
+        <span>⭐ Study pixel art basics</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== FEATURES =================== -->
+<section class="features" id="features">
+  <h2 class="features-title">✨ Why PixiDo? ✨</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🔐</span>
+      <div class="feature-title">Safe & Secure</div>
+      <p class="feature-desc">Your tasks are yours alone. Secure accounts with encrypted storage keep your data cozy and protected.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🌈</span>
+      <div class="feature-title">Pixel Perfect UI</div>
+      <p class="feature-desc">Hand-crafted kawaii pixel art aesthetic with smooth animations that make productivity joyful.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💾</span>
+      <div class="feature-title">Always Saved</div>
+      <p class="feature-desc">Your tasks persist across sessions. Log out and come back — everything is right where you left it.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🏆</span>
+      <div class="feature-title">Achievements</div>
+      <p class="feature-desc">Earn cute badges, maintain streaks, and celebrate your productivity milestones!</p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== HOW IT WORKS =================== -->
+<section class="how-it-works">
+  <h2 class="how-title">🌸 How It Works 🌸</h2>
+  <div class="steps-grid">
+    <div class="step-card">
+      <span class="step-num">01</span>
+      <span class="step-icon">🌸</span>
+      <div class="step-title">Sign Up</div>
+      <p class="step-desc">Create your free kawaii account in seconds. Pick your mascot and get started!</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">02</span>
+      <span class="step-icon">📋</span>
+      <div class="step-title">Add Tasks</div>
+      <p class="step-desc">Add tasks with priorities, categories, and cute labels. Stay organized in style.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">03</span>
+      <span class="step-icon">✨</span>
+      <div class="step-title">Complete & Celebrate</div>
+      <p class="step-desc">Check off tasks and watch confetti fly! Earn points and unlock achievements.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">04</span>
+      <span class="step-icon">🔥</span>
+      <div class="step-title">Build Streaks</div>
+      <p class="step-desc">Come back daily to maintain your streak and level up your productivity game.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =================== TESTIMONIALS =================== -->
+<section class="testimonials">
+  <h2 class="testimonials-title">💬 What our users say 💬</h2>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <p class="testi-text">"PixiDo made me actually want to do my homework. The little cat mascot cheers me on!"</p>
+      <div class="testi-author">— sakura_chan ⭐</div>
+    </div>
+    <div class="testi-card">
+      <p class="testi-text">"I've tried every todo app. None of them had pixel confetti when I finish tasks. 10/10."</p>
+      <div class="testi-author">— pixel_dreamer 🌸</div>
+    </div>
+    <div class="testi-card">
+      <p class="testi-text">"Finally a productivity app that matches my room aesthetic. My streak is at 47 days!"</p>
+      <div class="testi-author">— cozy_coder 💖</div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== CTA BAND =================== -->
+<section class="cta-band">
+  <h2 class="cta-band-title">Ready to be productive?<br>& cute?</h2>
+  <p class="cta-band-sub">Join thousands of kawaii productivity lovers. It's free! 🌸</p>
+  <a class="hero-cta main" href="pages/signup.html" style="font-size:11px">🌸 Start for Free — Right Meow 🐱</a>
+</section>
+
+<!-- =================== FOOTER =================== -->
+<footer class="landing-footer">
+  <div class="footer-logo">✨ PixiDo</div>
+  <p class="footer-sub">The kawaii productivity platform you deserve 💖</p>
+  <div class="footer-links">
+    <a class="footer-link" href="#">About</a>
+    <a class="footer-link" href="#">Privacy</a>
+    <a class="footer-link" href="#">Terms</a>
+    <a class="footer-link" href="#">Contact</a>
+  </div>
+  <p class="footer-copy">© 2025 PixiDo. Made with 💖 and pixel art.</p>
+</footer>
+
+<script src="components/db.js"></script>
+<script src="components/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // If already logged in, redirect to dashboard
+  const session = DB.getSession();
+  if (session) {
+    // Show dashboard link in nav but don't auto-redirect — let user choose
+  }
+
+  initShared('landing');
+
+  // Remove loading screen
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) {
+      ls.style.transition = 'opacity 0.5s';
+      ls.style.opacity = '0';
+      setTimeout(() => ls.remove(), 500);
+    }
+  }, 1400);
+
+  // Smooth scroll for features link
+  document.querySelector('a[href="#features"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

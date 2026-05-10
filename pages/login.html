@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔑 Login — PixiDo</title>
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/auth.css">
+</head>
+<body>
+
+<!-- PAGE TRANSITION OVERLAY -->
+<div id="page-transition">
+  <div class="transition-logo">✨</div>
+  <div class="transition-dots">
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+    <div class="transition-dot"></div>
+  </div>
+</div>
+
+<!-- FLOATING DECORATIONS -->
+<div id="floatingHearts"></div>
+<div id="floatingStars"></div>
+<canvas id="particleCanvas"></canvas>
+
+<!-- Floating background decorations -->
+<div class="auth-bg-deco" id="authBgDeco"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar"></nav>
+
+<!-- =================== LOGIN PAGE =================== -->
+<main class="auth-page-wrap">
+  <div class="auth-box">
+    <!-- Titlebar -->
+    <div class="auth-titlebar">
+      <div class="auth-titlebar-dots">
+        <span class="preview-dot red"></span>
+        <span class="preview-dot yellow"></span>
+        <span class="preview-dot green"></span>
+      </div>
+      <span class="auth-titlebar-title">🔑 PixiDo Login</span>
+    </div>
+
+    <div class="auth-body">
+      <!-- Mascot -->
+      <div class="auth-mascot" id="authMascot">🔑</div>
+
+      <h1 class="auth-heading">Welcome Back!</h1>
+      <p class="auth-subheading">Log in to your kawaii productivity zone 🌸</p>
+
+      <!-- Error message -->
+      <div class="auth-error" id="loginError"></div>
+
+      <!-- Login Form -->
+      <form class="auth-form" id="loginForm" novalidate>
+        <div class="field-group">
+          <label class="field-label" for="loginEmail">📧 Email</label>
+          <input class="field-input" type="email" id="loginEmail"
+                 placeholder="your@email.com" autocomplete="email" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="loginPass">🔒 Password</label>
+          <input class="field-input" type="password" id="loginPass"
+                 placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+
+        <button class="auth-submit" type="submit" id="loginBtn">
+          🌸 Login to PixiDo
+        </button>
+      </form>
+
+      <!-- Switch to signup -->
+      <div class="auth-switch" style="margin-top:20px">
+        Don't have an account?
+        <a href="signup.html">🌸 Sign up free</a>
+      </div>
+    </div>
+
+    <!-- Pixel decoration dots -->
+    <div class="auth-pixel-deco">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+</main>
+
+<script src="../components/db.js"></script>
+<script src="../components/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Redirect if already logged in
+  if (DB.getSession()) {
+    window.location.replace('dashboard.html');
+    return;
+  }
+
+  initShared('login');
+
+  // Spawn floating background decorations
+  const bgDeco = document.getElementById('authBgDeco');
+  const decoEmojis = ['🌸','⭐','💖','✨','🐱','🌷','💫','🎀'];
+  for (let i = 0; i < 12; i++) {
+    const span = document.createElement('span');
+    span.textContent = decoEmojis[Math.floor(Math.random() * decoEmojis.length)];
+    span.style.left = (Math.random() * 100) + '%';
+    span.style.animationDuration = (8 + Math.random() * 12) + 's';
+    span.style.animationDelay = (Math.random() * 10) + 's';
+    bgDeco.appendChild(span);
+  }
+
+  // Mascot changes on focus
+  const mascot = document.getElementById('authMascot');
+  document.getElementById('loginEmail').addEventListener('focus', () => { mascot.textContent = '📧'; });
+  document.getElementById('loginPass').addEventListener('focus', () => { mascot.textContent = '🔒'; });
+  document.getElementById('loginEmail').addEventListener('blur', () => { mascot.textContent = '🔑'; });
+  document.getElementById('loginPass').addEventListener('blur', () => { mascot.textContent = '🔑'; });
+
+  // Form submission
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPass').value;
+    const errEl    = document.getElementById('loginError');
+    const btn      = document.getElementById('loginBtn');
+
+    errEl.classList.remove('visible');
+    errEl.textContent = '';
+
+    if (!email || !password) {
+      errEl.textContent = '❌ Please fill in all fields!';
+      errEl.classList.add('visible');
+      return;
+    }
+
+    btn.textContent = '⏳ Logging in...';
+    btn.disabled = true;
+
+    // Simulate async (localStorage is sync but UX feels better with delay)
+    setTimeout(() => {
+      const result = DB.loginUser({ email, password });
+
+      if (result.error) {
+        errEl.textContent = '❌ ' + result.error;
+        errEl.classList.add('visible');
+        mascot.textContent = '😿';
+        btn.textContent = '🌸 Login to PixiDo';
+        btn.disabled = false;
+        document.getElementById('loginPass').classList.add('error');
+        setTimeout(() => document.getElementById('loginPass').classList.remove('error'), 1500);
+        return;
+      }
+
+      // Success!
+      mascot.textContent = '🎉';
+      spawnDeco('floatingHearts', ['💖','🌸','⭐','✨'], 6);
+      notify('Welcome back, ' + result.session.username + '! 🌸', '💖');
+
+      // Update streak
+      const meta = DB.getMeta(result.session.uid);
+      const today = new Date().toDateString();
+      if (!meta.lastActive) {
+        meta.lastActive = today; meta.streak = 1;
+      } else if (meta.lastActive !== today) {
+        const last = new Date(meta.lastActive);
+        const diff = (new Date(today) - last) / 86400000;
+        meta.streak = (diff <= 1) ? (meta.streak || 0) + 1 : 1;
+        meta.lastActive = today;
+      }
+      DB.saveMeta(result.session.uid, meta);
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 800);
+    }, 400);
+  });
+});
+</script>
+</body>
+</html>
