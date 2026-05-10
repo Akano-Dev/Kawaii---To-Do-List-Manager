@@ -34,7 +34,21 @@ const DB = (() => {
   };
   const saveTasks = (uid, tasks) => {
     const users = getUsers();
-    if (users[uid]) { users[uid].tasks = tasks; saveUsers(users); }
+    // Safety: if user record somehow missing, recreate it from session
+    if (!users[uid]) {
+      const session = getSession();
+      if (!session || session.uid !== uid) return;
+      users[uid] = {
+        email: session.email,
+        username: session.username,
+        passHash: '',
+        avatar: session.avatar || '🐱',
+        tasks: [],
+        meta: { points: 0, streak: 0, lastActive: null, completedTotal: 0 },
+      };
+    }
+    users[uid].tasks = tasks;
+    saveUsers(users);
   };
 
   // ---- Meta (streak, points, etc.) ----
@@ -46,7 +60,9 @@ const DB = (() => {
   };
   const saveMeta = (uid, meta) => {
     const users = getUsers();
-    if (users[uid]) { users[uid].meta = meta; saveUsers(users); }
+    if (!users[uid]) return;
+    users[uid].meta = meta;
+    saveUsers(users);
   };
 
   // ---- Settings ----
@@ -98,6 +114,24 @@ const DB = (() => {
     return { session };
   };
 
+  // ---- Debug helper ----
+  // Open browser console and type: DB.debug()
+  const debug = () => {
+    const users = getUsers();
+    const session = getSession();
+    const settings = getSettings();
+    const uid = session?.uid;
+    console.group('🐱 PixiDo Storage Debug');
+    console.log('📍 Origin:', window.location.origin);
+    console.log('👤 Session:', session);
+    console.log('📋 Tasks:', uid ? getTasks(uid) : 'no session');
+    console.log('📊 Meta:', uid ? getMeta(uid) : 'no session');
+    console.log('⚙️ Settings:', settings);
+    console.log('🗄️ All users:', Object.keys(users).length, 'account(s)');
+    console.groupEnd();
+    return { session, tasks: uid ? getTasks(uid) : [], meta: uid ? getMeta(uid) : {} };
+  };
+
   return {
     getUsers, saveUsers,
     getSession, saveSession, clearSession,
@@ -105,6 +139,7 @@ const DB = (() => {
     getMeta, saveMeta,
     getSettings, saveSettings,
     registerUser, loginUser,
+    debug,
   };
 })();
 

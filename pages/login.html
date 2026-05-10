@@ -52,6 +52,9 @@
       <h1 class="auth-heading">Welcome Back!</h1>
       <p class="auth-subheading">Log in to your kawaii productivity zone 🌸</p>
 
+      <!-- Origin info (helps debug data loss) -->
+      <div id="originNote" style="font-size:9px;color:#aaa;text-align:center;margin-bottom:12px;font-family:'Press Start 2P',monospace;line-height:1.8"></div>
+
       <!-- Error message -->
       <div class="auth-error" id="loginError"></div>
 
@@ -99,6 +102,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initShared('login');
+
+  // Show which origin data is stored on (helps avoid confusion)
+  const users = DB.getUsers();
+  const userCount = Object.keys(users).length;
+  const originNote = document.getElementById('originNote');
+  if (userCount > 0) {
+    originNote.textContent = `📍 ${userCount} account${userCount > 1 ? 's' : ''} found on ${window.location.host}`;
+    originNote.style.color = '#5ec38a';
+  } else {
+    originNote.textContent = `📍 No accounts on ${window.location.host} yet`;
+  }
 
   // Spawn floating background decorations
   const bgDeco = document.getElementById('authBgDeco');
