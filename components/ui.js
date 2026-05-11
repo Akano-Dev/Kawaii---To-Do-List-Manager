@@ -424,11 +424,12 @@ const buildNavbar = (activePage = '') => {
   const logoutBtn = document.getElementById('navLogoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
-      DB.clearSession();
-      notify('Logged out! See you soon~ 💖', '👋');
-      setTimeout(() => {
-        window.location.href = rootPrefix + 'index.html';
-      }, 600);
+      DB.logoutUser().then(() => {
+        notify('Logged out! See you soon~ 💖', '👋');
+        setTimeout(() => {
+          window.location.href = rootPrefix + 'index.html';
+        }, 600);
+      });
     });
   }
 };

@@ -100,6 +100,7 @@
 </main>
 
 <script src="../components/db.js"></script>
+<script type="module" src="../components/firebase-init.js"></script>
 <script src="../components/ui.js"></script>
 <script src="../components/pwa.js"></script>
 <script>
@@ -160,10 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = '⏳ Logging in...';
     btn.disabled = true;
 
-    // Simulate async (localStorage is sync but UX feels better with delay)
-    setTimeout(() => {
-      const result = DB.loginUser({ email, password });
-
+    // Firebase auth is async
+    DB.loginUser({ email, password }).then((result) => {
       if (result.error) {
         errEl.textContent = '❌ ' + result.error;
         errEl.classList.add('visible');
@@ -175,28 +174,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Success!
+      // Success — fetch tasks & meta then go to dashboard
       mascot.textContent = '🎉';
       spawnDeco('floatingHearts', ['💖','🌸','⭐','✨'], 6);
       notify('Welcome back, ' + result.session.username + '! 🌸', '💖');
 
       // Update streak
-      const meta = DB.getMeta(result.session.uid);
-      const today = new Date().toDateString();
-      if (!meta.lastActive) {
-        meta.lastActive = today; meta.streak = 1;
-      } else if (meta.lastActive !== today) {
-        const last = new Date(meta.lastActive);
-        const diff = (new Date(today) - last) / 86400000;
-        meta.streak = (diff <= 1) ? (meta.streak || 0) + 1 : 1;
-        meta.lastActive = today;
-      }
-      DB.saveMeta(result.session.uid, meta);
+      DB.fetchMeta(result.session.uid).then((meta) => {
+        const today = new Date().toDateString();
+        if (!meta.lastActive) {
+          meta.lastActive = today; meta.streak = 1;
+        } else if (meta.lastActive !== today) {
+          const diff = (new Date(today) - new Date(meta.lastActive)) / 86400000;
+          meta.streak = (diff <= 1) ? (meta.streak || 0) + 1 : 1;
+          meta.lastActive = today;
+        }
+        DB.saveMeta(result.session.uid, meta);
+      });
 
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 800);
-    }, 400);
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+    });
   });
 });
 </script>

@@ -127,6 +127,7 @@
 </main>
 
 <script src="../components/db.js"></script>
+<script type="module" src="../components/firebase-init.js"></script>
 <script src="../components/ui.js"></script>
 <script src="../components/pwa.js"></script>
 <script>
@@ -229,9 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = '⏳ Creating account...';
     btn.disabled = true;
 
-    setTimeout(() => {
-      const result = DB.registerUser({ username, email, password });
-
+    DB.registerUser({ username, email, password }).then((result) => {
       if (result.error) {
         errEl.textContent = '❌ ' + result.error;
         errEl.classList.add('visible');
@@ -247,10 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
       spawnDeco('floatingHearts', ['💖','🌸','⭐','✨','🎉'], 10);
       notify('Welcome to PixiDo, ' + username + '! 🌸', '✨');
 
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 1800);
-    }, 500);
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1800);
+    });
   });
 });
 </script>

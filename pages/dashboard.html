@@ -279,6 +279,7 @@
 <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" aria-label="Toggle sidebar">📂</button>
 
 <script src="../components/db.js"></script>
+<script type="module" src="../components/firebase-init.js"></script>
 <script src="../components/ui.js"></script>
 <script src="../components/pwa.js"></script>
 <script>
@@ -310,8 +311,8 @@ const Dashboard = (() => {
     }
 
     currentUser = session;
-    tasks = DB.getTasks(session.uid);
-    meta  = DB.getMeta(session.uid);
+    tasks = DB.getTasks(session.uid);   // instant from cache
+    meta  = DB.getMeta(session.uid);    // instant from cache
 
     initShared('dashboard');
     PWA.registerSW();
@@ -320,6 +321,16 @@ const Dashboard = (() => {
     PWA.initSwipeGestures();
     setupEventListeners();
     updateDashboard();
+
+    // Fetch fresh data from Firestore in background
+    Promise.all([
+      DB.fetchTasks(session.uid),
+      DB.fetchMeta(session.uid),
+    ]).then(([freshTasks, freshMeta]) => {
+      tasks = freshTasks;
+      meta  = freshMeta;
+      updateDashboard();
+    });
 
     // Mobile sidebar toggle
     document.getElementById('mobileSidebarToggle')?.addEventListener('click', () => {
