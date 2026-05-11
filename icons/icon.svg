@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#ffeef7"/>
+  <!-- Outer pixel border -->
+  <rect x="32" y="32" width="448" height="448" fill="#ff9dbb"/>
+  <rect x="48" y="48" width="416" height="416" fill="#ffeef7"/>
+
+  <!-- Cat face body -->
+  <rect x="128" y="144" width="256" height="208" fill="#ff9dbb"/>
+  <!-- Cat ears -->
+  <rect x="128" y="96"  width="80"  height="80"  fill="#ff9dbb"/>
+  <rect x="304" y="96"  width="80"  height="80"  fill="#ff9dbb"/>
+  <!-- Inner ears -->
+  <rect x="144" y="112" width="48"  height="48"  fill="#ffb3d1"/>
+  <rect x="320" y="112" width="48"  height="48"  fill="#ffb3d1"/>
+
+  <!-- Eyes -->
+  <rect x="176" y="208" width="48" height="48" fill="#2d2d2d"/>
+  <rect x="288" y="208" width="48" height="48" fill="#2d2d2d"/>
+  <!-- Eye shine -->
+  <rect x="192" y="216" width="16" height="16" fill="#ffffff"/>
+  <rect x="304" y="216" width="16" height="16" fill="#ffffff"/>
+
+  <!-- Nose -->
+  <rect x="240" y="272" width="32" height="16" fill="#ff6b9d"/>
+
+  <!-- Mouth -->
+  <rect x="208" y="304" width="16" height="16" fill="#2d2d2d"/>
+  <rect x="288" y="304" width="16" height="16" fill="#2d2d2d"/>
+  <rect x="224" y="288" width="64" height="16" fill="#2d2d2d"/>
+
+  <!-- Cheek blush -->
+  <rect x="144" y="272" width="48" height="32" fill="#ffb3d1" opacity="0.6"/>
+  <rect x="320" y="272" width="48" height="32" fill="#ffb3d1" opacity="0.6"/>
+
+  <!-- Sparkle top-right -->
+  <rect x="368" y="64"  width="16" height="16" fill="#ffd93d"/>
+  <rect x="352" y="80"  width="48" height="16" fill="#ffd93d"/>
+  <rect x="368" y="96"  width="16" height="16" fill="#ffd93d"/>
+
+  <!-- Sparkle bottom-left -->
+  <rect x="80"  y="368" width="16" height="16" fill="#a8e6cf"/>
+  <rect x="64"  y="384" width="48" height="16" fill="#a8e6cf"/>
+  <rect x="80"  y="400" width="16" height="16" fill="#a8e6cf"/>
+
+  <!-- Pixel border accent -->
+  <rect x="32"  y="32"  width="448" height="16" fill="#2d2d2d"/>
+  <rect x="32"  y="464" width="448" height="16" fill="#2d2d2d"/>
+  <rect x="32"  y="32"  width="16"  height="448" fill="#2d2d2d"/>
+  <rect x="464" y="32"  width="16"  height="448" fill="#2d2d2d"/>
+</svg>

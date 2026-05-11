@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>✨ PixiDo — Offline</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #ffb3e6 0%, #c7ceea 40%, #a8e6cf 100%);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 20px;
+  }
+  .card {
+    background: rgba(255,253,247,0.97); border: 3px solid #2d2d2d;
+    box-shadow: 0 8px 0 #555; padding: 40px 32px; max-width: 360px; width: 100%;
+    animation: pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes pop { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+  .mascot { font-size: 72px; display: block; margin-bottom: 20px;
+    animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  h1 { font-family: 'Press Start 2P', monospace; font-size: 13px; margin-bottom: 12px;
+    color: #2d2d2d; line-height: 1.6; }
+  p { font-size: 13px; color: #888; line-height: 1.7; margin-bottom: 24px; }
+  .retry-btn {
+    font-family: 'Press Start 2P', monospace; font-size: 8px;
+    padding: 14px 20px; border: 3px solid #2d2d2d; cursor: pointer;
+    background: linear-gradient(145deg, #ff9dbb, #fecfef);
+    box-shadow: 0 4px 0 #555; transition: all 0.1s; color: #2d2d2d;
+    display: inline-block; text-decoration: none;
+  }
+  .retry-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #555; }
+  .retry-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #555; }
+  .dots { display: flex; gap: 8px; justify-content: center; margin-top: 24px; }
+  .dot { width: 10px; height: 10px; border: 2px solid #2d2d2d;
+    animation: dotPop 0.8s ease-in-out infinite; }
+  .dot:nth-child(1){ background:#ff9dbb; animation-delay:0s; }
+  .dot:nth-child(2){ background:#a8e6cf; animation-delay:0.2s; }
+  .dot:nth-child(3){ background:#ffd93d; animation-delay:0.4s; }
+  @keyframes dotPop { 0%,100%{transform:scale(1)} 50%{transform:scale(1.5)} }
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="mascot">😿</span>
+  <h1>You're Offline!</h1>
+  <p>No internet connection detected.<br>Your tasks are safely saved locally — check back when you're connected! 💖</p>
+  <button class="retry-btn" onclick="window.location.reload()">🔄 Try Again</button>
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+</div>
+</body>
+</html>

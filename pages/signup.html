@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ff9dbb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PixiDo">
 <title>🌸 Sign Up — PixiDo</title>
-<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges"><rect width="16" height="16" fill="%23ffeef7"/><rect x="4" y="4" width="8" height="6" fill="%23ff9dbb"/><rect x="5" y="5" width="1" height="1" fill="%23333"/><rect x="10" y="5" width="1" height="1" fill="%23333"/><rect x="7" y="7" width="2" height="1" fill="%23333"/></svg>'/>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/mobile.css">
 <link rel="stylesheet" href="../styles/auth.css">
 </head>
 <body>
@@ -120,15 +128,14 @@
 
 <script src="../components/db.js"></script>
 <script src="../components/ui.js"></script>
+<script src="../components/pwa.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Redirect if already logged in
-  if (DB.getSession()) {
-    window.location.replace('dashboard.html');
-    return;
-  }
-
+  if (DB.getSession()) { window.location.replace('dashboard.html'); return; }
   initShared('signup');
+  PWA.registerSW();
+  PWA.initInstallPrompt();
+  PWA.initTouchFeedback();
 
   // Spawn floating background decorations
   const bgDeco = document.getElementById('authBgDeco');
