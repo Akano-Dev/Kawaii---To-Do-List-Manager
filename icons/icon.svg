@@ -1,51 +1,139 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
-  <!-- Background -->
-  <rect width="512" height="512" fill="#ffeef7"/>
-  <!-- Outer pixel border -->
-  <rect x="32" y="32" width="448" height="448" fill="#ff9dbb"/>
-  <rect x="48" y="48" width="416" height="416" fill="#ffeef7"/>
 
-  <!-- Cat face body -->
-  <rect x="128" y="144" width="256" height="208" fill="#ff9dbb"/>
-  <!-- Cat ears -->
-  <rect x="128" y="96"  width="80"  height="80"  fill="#ff9dbb"/>
-  <rect x="304" y="96"  width="80"  height="80"  fill="#ff9dbb"/>
-  <!-- Inner ears -->
-  <rect x="144" y="112" width="48"  height="48"  fill="#ffb3d1"/>
-  <rect x="320" y="112" width="48"  height="48"  fill="#ffb3d1"/>
+  <!-- Background — soft pink gradient feel -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#ffeef7"/>
+      <stop offset="100%" stop-color="#e8d5f5"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
 
-  <!-- Eyes -->
-  <rect x="176" y="208" width="48" height="48" fill="#2d2d2d"/>
-  <rect x="288" y="208" width="48" height="48" fill="#2d2d2d"/>
+  <!-- Rounded pixel border -->
+  <rect x="0"   y="0"   width="512" height="32"  fill="#2d2d2d"/>
+  <rect x="0"   y="480" width="512" height="32"  fill="#2d2d2d"/>
+  <rect x="0"   y="0"   width="32"  height="512" fill="#2d2d2d"/>
+  <rect x="480" y="0"   width="32"  height="512" fill="#2d2d2d"/>
+  <rect x="32"  y="32"  width="448" height="16"  fill="#ff9dbb"/>
+  <rect x="32"  y="464" width="448" height="16"  fill="#ff9dbb"/>
+  <rect x="32"  y="32"  width="16"  height="448" fill="#ff9dbb"/>
+  <rect x="464" y="32"  width="16"  height="448" fill="#ff9dbb"/>
+
+  <!-- ===================== SYLVEON PIXEL ART ===================== -->
+  <!-- Body — pink -->
+  <rect x="208" y="192" width="96"  height="80"  fill="#f4a0b8"/>
+  <rect x="192" y="208" width="128" height="64"  fill="#f4a0b8"/>
+  <rect x="176" y="224" width="160" height="48"  fill="#f4a0b8"/>
+
+  <!-- Head -->
+  <rect x="224" y="144" width="80"  height="64"  fill="#f4a0b8"/>
+  <rect x="208" y="160" width="96"  height="48"  fill="#f4a0b8"/>
+
+  <!-- Ears -->
+  <rect x="224" y="112" width="32"  height="48"  fill="#f4a0b8"/>
+  <rect x="272" y="112" width="32"  height="48"  fill="#f4a0b8"/>
+  <!-- Ear tips dark -->
+  <rect x="224" y="96"  width="32"  height="16"  fill="#c0607a"/>
+  <rect x="272" y="96"  width="32"  height="16"  fill="#c0607a"/>
+
+  <!-- Eyes — blue -->
+  <rect x="232" y="176" width="20"  height="20"  fill="#5bc8e8"/>
+  <rect x="276" y="176" width="20"  height="20"  fill="#5bc8e8"/>
+  <!-- Eye pupils -->
+  <rect x="236" y="180" width="12"  height="12"  fill="#1a6080"/>
+  <rect x="280" y="180" width="12"  height="12"  fill="#1a6080"/>
   <!-- Eye shine -->
-  <rect x="192" y="216" width="16" height="16" fill="#ffffff"/>
-  <rect x="304" y="216" width="16" height="16" fill="#ffffff"/>
+  <rect x="236" y="180" width="6"   height="6"   fill="#ffffff"/>
+  <rect x="280" y="180" width="6"   height="6"   fill="#ffffff"/>
 
   <!-- Nose -->
-  <rect x="240" y="272" width="32" height="16" fill="#ff6b9d"/>
+  <rect x="252" y="200" width="8"   height="6"   fill="#c0607a"/>
 
   <!-- Mouth -->
-  <rect x="208" y="304" width="16" height="16" fill="#2d2d2d"/>
-  <rect x="288" y="304" width="16" height="16" fill="#2d2d2d"/>
-  <rect x="224" y="288" width="64" height="16" fill="#2d2d2d"/>
+  <rect x="244" y="208" width="8"   height="4"   fill="#c0607a"/>
+  <rect x="276" y="208" width="8"   height="4"   fill="#c0607a"/>
+  <rect x="252" y="212" width="24"  height="4"   fill="#c0607a"/>
 
-  <!-- Cheek blush -->
-  <rect x="144" y="272" width="48" height="32" fill="#ffb3d1" opacity="0.6"/>
-  <rect x="320" y="272" width="48" height="32" fill="#ffb3d1" opacity="0.6"/>
+  <!-- Bow/ribbon on head — blue -->
+  <rect x="256" y="128" width="32"  height="16"  fill="#5bc8e8"/>
+  <rect x="248" y="132" width="48"  height="8"   fill="#5bc8e8"/>
+  <!-- Bow center -->
+  <rect x="268" y="130" width="8"   height="12"  fill="#ffffff"/>
 
-  <!-- Sparkle top-right -->
-  <rect x="368" y="64"  width="16" height="16" fill="#ffd93d"/>
-  <rect x="352" y="80"  width="48" height="16" fill="#ffd93d"/>
-  <rect x="368" y="96"  width="16" height="16" fill="#ffd93d"/>
+  <!-- Feeler ribbons — left -->
+  <rect x="128" y="192" width="80"  height="16"  fill="#f4a0b8"/>
+  <rect x="112" y="208" width="32"  height="16"  fill="#f4a0b8"/>
+  <rect x="96"  y="224" width="32"  height="16"  fill="#5bc8e8"/>
+  <!-- Feeler tip left -->
+  <rect x="80"  y="224" width="16"  height="16"  fill="#5bc8e8"/>
 
-  <!-- Sparkle bottom-left -->
-  <rect x="80"  y="368" width="16" height="16" fill="#a8e6cf"/>
-  <rect x="64"  y="384" width="48" height="16" fill="#a8e6cf"/>
-  <rect x="80"  y="400" width="16" height="16" fill="#a8e6cf"/>
+  <!-- Feeler ribbons — right -->
+  <rect x="304" y="192" width="80"  height="16"  fill="#f4a0b8"/>
+  <rect x="368" y="208" width="32"  height="16"  fill="#f4a0b8"/>
+  <rect x="384" y="224" width="32"  height="16"  fill="#5bc8e8"/>
+  <!-- Feeler tip right -->
+  <rect x="416" y="224" width="16"  height="16"  fill="#5bc8e8"/>
 
-  <!-- Pixel border accent -->
-  <rect x="32"  y="32"  width="448" height="16" fill="#2d2d2d"/>
-  <rect x="32"  y="464" width="448" height="16" fill="#2d2d2d"/>
-  <rect x="32"  y="32"  width="16"  height="448" fill="#2d2d2d"/>
-  <rect x="464" y="32"  width="16"  height="448" fill="#2d2d2d"/>
+  <!-- Legs -->
+  <rect x="208" y="272" width="32"  height="48"  fill="#f4a0b8"/>
+  <rect x="256" y="272" width="32"  height="48"  fill="#f4a0b8"/>
+  <rect x="304" y="272" width="32"  height="48"  fill="#f4a0b8"/>
+  <!-- Paws white -->
+  <rect x="208" y="304" width="32"  height="16"  fill="#ffffff"/>
+  <rect x="256" y="304" width="32"  height="16"  fill="#ffffff"/>
+  <rect x="304" y="304" width="32"  height="16"  fill="#ffffff"/>
+
+  <!-- Tail -->
+  <rect x="320" y="240" width="48"  height="16"  fill="#f4a0b8"/>
+  <rect x="352" y="256" width="32"  height="16"  fill="#f4a0b8"/>
+  <rect x="368" y="272" width="16"  height="16"  fill="#5bc8e8"/>
+
+  <!-- Chest bow — blue -->
+  <rect x="232" y="240" width="48"  height="16"  fill="#5bc8e8"/>
+  <rect x="248" y="232" width="16"  height="8"   fill="#5bc8e8"/>
+  <rect x="264" y="232" width="16"  height="8"   fill="#5bc8e8"/>
+  <!-- Bow center white -->
+  <rect x="252" y="234" width="8"   height="12"  fill="#ffffff"/>
+
+  <!-- Sparkles -->
+  <rect x="96"  y="144" width="16"  height="16"  fill="#ffd93d"/>
+  <rect x="88"  y="152" width="32"  height="8"   fill="#ffd93d"/>
+  <rect x="400" y="160" width="16"  height="16"  fill="#ffd93d"/>
+  <rect x="392" y="168" width="32"  height="8"   fill="#ffd93d"/>
+  <rect x="144" y="304" width="12"  height="12"  fill="#a8e6cf"/>
+  <rect x="138" y="310" width="24"  height="6"   fill="#a8e6cf"/>
+
+  <!-- ===================== "PixiDo" TEXT ===================== -->
+  <!-- P -->
+  <rect x="96"  y="368" width="12" height="48" fill="#2d2d2d"/>
+  <rect x="108" y="368" width="24" height="12" fill="#2d2d2d"/>
+  <rect x="132" y="380" width="12" height="12" fill="#2d2d2d"/>
+  <rect x="108" y="392" width="24" height="12" fill="#2d2d2d"/>
+  <!-- i -->
+  <rect x="156" y="368" width="12" height="12" fill="#ff9dbb"/>
+  <rect x="156" y="388" width="12" height="28" fill="#2d2d2d"/>
+  <!-- x -->
+  <rect x="180" y="388" width="12" height="12" fill="#2d2d2d"/>
+  <rect x="204" y="388" width="12" height="12" fill="#2d2d2d"/>
+  <rect x="192" y="400" width="12" height="12" fill="#2d2d2d"/>
+  <rect x="180" y="412" width="12" height="12" fill="#2d2d2d"/>
+  <rect x="204" y="412" width="12" height="12" fill="#2d2d2d"/>
+  <!-- i -->
+  <rect x="228" y="368" width="12" height="12" fill="#ff9dbb"/>
+  <rect x="228" y="388" width="12" height="28" fill="#2d2d2d"/>
+  <!-- D -->
+  <rect x="252" y="368" width="12" height="48" fill="#2d2d2d"/>
+  <rect x="264" y="368" width="24" height="12" fill="#2d2d2d"/>
+  <rect x="288" y="380" width="12" height="24" fill="#2d2d2d"/>
+  <rect x="264" y="404" width="24" height="12" fill="#2d2d2d"/>
+  <!-- o -->
+  <rect x="312" y="388" width="12" height="28" fill="#2d2d2d"/>
+  <rect x="348" y="388" width="12" height="28" fill="#2d2d2d"/>
+  <rect x="324" y="388" width="24" height="12" fill="#2d2d2d"/>
+  <rect x="324" y="404" width="24" height="12" fill="#2d2d2d"/>
+
+  <!-- Underline accent -->
+  <rect x="96" y="424" width="280" height="6" fill="#ff9dbb"/>
+  <rect x="96" y="430" width="280" height="4" fill="#5bc8e8"/>
+
 </svg>
