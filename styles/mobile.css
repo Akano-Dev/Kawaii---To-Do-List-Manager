@@ -304,6 +304,11 @@
   }
 }
 
+/* ---- Hide Pokémon widget on mobile (bottom nav takes that space) ---- */
+@media (max-width: 768px) {
+  #pokemon-widget { display: none; }
+}
+
 /* ---- Landscape phone ---- */
 @media (max-width: 768px) and (orientation: landscape) {
   .hero { min-height: auto; padding: 80px 20px 40px; }

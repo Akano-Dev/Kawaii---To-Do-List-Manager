@@ -352,6 +352,19 @@ const AudioMgr = (() => {
     vol = s.volume || 0.5;
     muted = s.muted || false;
     if (masterGain) masterGain.gain.value = muted ? 0 : vol;
+    // Auto-resume BGM if it was playing before page navigation
+    if (localStorage.getItem('pixido_bgm_playing') === '1' && !bgmPlaying) {
+      // Wait for first user interaction to comply with autoplay policy
+      const resume = () => {
+        startBGM();
+        document.removeEventListener('click', resume);
+        document.removeEventListener('keydown', resume);
+        document.removeEventListener('touchstart', resume);
+      };
+      document.addEventListener('click', resume, { once: true });
+      document.addEventListener('keydown', resume, { once: true });
+      document.addEventListener('touchstart', resume, { once: true });
+    }
   };
 
   return {
@@ -374,8 +387,10 @@ const AudioMgr = (() => {
     toggleBGM() {
       if (bgmPlaying) {
         stopBGM();
+        localStorage.setItem('pixido_bgm_playing', '0');
       } else {
         startBGM();
+        localStorage.setItem('pixido_bgm_playing', '1');
       }
       return bgmPlaying;
     },
@@ -386,8 +401,40 @@ const AudioMgr = (() => {
 })();
 
 // ============================================================
-//  NAVBAR BUILDER
+//  THEME MANAGER — applies CSS variable overrides per theme
 // ============================================================
+const ThemeManager = (() => {
+  const THEMES = {
+    kawaii:   { '--pink':'#ff9dbb','--pink-dark':'#ff6b9d','--pink-pale':'#ffeef7','--mint':'#a8e6cf','--mint-dark':'#5ec38a','--lavender':'#c7ceea','--yellow':'#ffd93d','--bg-start':'#ffb3e6','--bg-mid':'#c7ceea','--bg-end':'#a8e6cf','--ink':'#2d2d2d','--shadow':'#555' },
+    midnight: { '--pink':'#9b59b6','--pink-dark':'#8e44ad','--pink-pale':'#2c1654','--mint':'#1abc9c','--mint-dark':'#16a085','--lavender':'#34495e','--yellow':'#f39c12','--bg-start':'#1a1a2e','--bg-mid':'#16213e','--bg-end':'#0f3460','--ink':'#ecf0f1','--shadow':'#000' },
+    forest:   { '--pink':'#a8d8a8','--pink-dark':'#5a9e5a','--pink-pale':'#e8f5e8','--mint':'#7ec8a0','--mint-dark':'#4a9e6a','--lavender':'#b8d4b8','--yellow':'#d4c56a','--bg-start':'#2d5a27','--bg-mid':'#4a7c59','--bg-end':'#a8e6cf','--ink':'#1a2e1a','--shadow':'#0a1a0a' },
+    sunset:   { '--pink':'#ff6b6b','--pink-dark':'#ee5a24','--pink-pale':'#fff0f0','--mint':'#ffd93d','--mint-dark':'#f9ca24','--lavender':'#ffb347','--yellow':'#ff9f43','--bg-start':'#ff6b6b','--bg-mid':'#ffd93d','--bg-end':'#ffb347','--ink':'#2d1a00','--shadow':'#8b3a00' },
+    ocean:    { '--pink':'#00b4d8','--pink-dark':'#0077b6','--pink-pale':'#caf0f8','--mint':'#90e0ef','--mint-dark':'#48cae4','--lavender':'#ade8f4','--yellow':'#f0e68c','--bg-start':'#0077b6','--bg-mid':'#00b4d8','--bg-end':'#90e0ef','--ink':'#03045e','--shadow':'#023e8a' },
+    sakura:   { '--pink':'#ff9dbb','--pink-dark':'#e75480','--pink-pale':'#fff0f5','--mint':'#ffb7c5','--mint-dark':'#ff69b4','--lavender':'#ffc0cb','--yellow':'#ffe4e1','--bg-start':'#ffb7c5','--bg-mid':'#ff9dbb','--bg-end':'#ffeef7','--ink':'#4a0020','--shadow':'#8b0040' },
+  };
+
+  const apply = (themeName) => {
+    const theme = THEMES[themeName] || THEMES.kawaii;
+    const root = document.documentElement;
+    Object.entries(theme).forEach(([k, v]) => root.style.setProperty(k, v));
+    // Update body background
+    if (theme['--bg-start']) {
+      document.body.style.background = `linear-gradient(135deg, ${theme['--bg-start']} 0%, ${theme['--bg-mid']} 40%, ${theme['--bg-end']} 100%)`;
+    }
+    localStorage.setItem('pixido_theme', themeName);
+  };
+
+  const loadSaved = () => {
+    const saved = localStorage.getItem('pixido_theme') ||
+                  (DB.getSettings().theme) || 'kawaii';
+    apply(saved);
+    return saved;
+  };
+
+  return { apply, loadSaved, THEMES };
+})();
+
+window.ThemeManager = ThemeManager;
 const buildNavbar = (activePage = '') => {
   const session = DB.getSession();
   const loggedIn = !!session;
@@ -435,17 +482,101 @@ const buildNavbar = (activePage = '') => {
 };
 
 // ============================================================
+//  POKÉMON CORNER WIDGET
+//  Fetches a random kawaii Pokémon sprite from PokeAPI
+//  and shows it bouncing in the bottom-right corner
+// ============================================================
+const spawnPokemonWidget = () => {
+  // Curated list of cute/kawaii Pokémon IDs
+  const CUTE_POKEMON = [
+    35,  // Clefairy
+    39,  // Jigglypuff
+    52,  // Meowth
+    54,  // Psyduck
+    133, // Eevee
+    175, // Togepi
+    183, // Marill
+    196, // Espeon
+    197, // Umbreon
+    216, // Teddiursa
+    300, // Skitty
+    311, // Plusle
+    312, // Minun
+    351, // Castform
+    417, // Pachirisu
+    427, // Buneary
+    468, // Togekiss
+    470, // Leafeon
+    471, // Glaceon
+    700, // Sylveon
+    702, // Dedenne
+    730, // Primarina
+    778, // Mimikyu
+    856, // Hatenna
+  ];
+
+  const id = CUTE_POKEMON[Math.floor(Math.random() * CUTE_POKEMON.length)];
+  const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+
+  const widget = document.createElement('div');
+  widget.id = 'pokemon-widget';
+  widget.innerHTML = `
+    <img src="${spriteUrl}" alt="Pokémon buddy" id="pokemon-sprite"
+         onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png'">
+    <div id="pokemon-speech" class="pokemon-speech hidden"></div>
+  `;
+  document.body.appendChild(widget);
+
+  // Random encouraging messages
+  const MESSAGES = [
+    '✨ You can do it!',
+    '🌸 Stay kawaii!',
+    '💖 Keep going!',
+    '⭐ Amazing work!',
+    '🎉 You\'re on fire!',
+    '🍀 Good luck today!',
+    '💪 Believe in you!',
+    '🌈 Stay productive!',
+  ];
+
+  // Show speech bubble on click
+  const sprite = widget.querySelector('#pokemon-sprite');
+  const speech = widget.querySelector('#pokemon-speech');
+  let speechTimeout;
+  sprite.addEventListener('click', () => {
+    speech.textContent = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+    speech.classList.remove('hidden');
+    AudioMgr.play('notif');
+    clearTimeout(speechTimeout);
+    speechTimeout = setTimeout(() => speech.classList.add('hidden'), 2500);
+  });
+
+  // Cycle to new Pokémon every 5 minutes
+  setInterval(() => {
+    const newId = CUTE_POKEMON[Math.floor(Math.random() * CUTE_POKEMON.length)];
+    sprite.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newId}.png`;
+    sprite.onerror = () => { sprite.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${newId}.png`; };
+  }, 5 * 60 * 1000);
+};
+
+// ============================================================
 //  SHARED INIT (call on every page)
 // ============================================================
 const initShared = (activePage = '') => {
+  // Apply saved theme immediately
+  ThemeManager.loadSaved();
+
   // Build navbar
   buildNavbar(activePage);
 
   // Init particles
   Particles.init();
 
-  // Load audio settings
+  // Load audio settings (also handles BGM auto-resume)
   AudioMgr.loadSettings();
+
+  // Spawn Pokémon corner widget
+  spawnPokemonWidget();
 
   // Click sparkle effect on buttons
   document.addEventListener('click', e => {
@@ -482,5 +613,7 @@ window.spawnDeco = spawnDeco;
 window.notify = notify;
 window.confetti = confetti;
 window.AudioMgr = AudioMgr;
+window.ThemeManager = ThemeManager;
 window.buildNavbar = buildNavbar;
 window.initShared = initShared;
+window.spawnPokemonWidget = spawnPokemonWidget;

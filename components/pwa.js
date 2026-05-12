@@ -62,9 +62,17 @@ const PWA = (() => {
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
 
+  // ---- Check if mobile/touch device ----
+  const isMobileDevice = () =>
+    window.innerWidth <= 768 ||
+    /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent) ||
+    ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+
   // ---- Show install banner ----
   const showInstallBanner = () => {
     if (installBannerShown || isInstalled()) return;
+    // Only show on mobile devices
+    if (!isMobileDevice()) return;
     installBannerShown = true;
 
     const banner = document.createElement('div');

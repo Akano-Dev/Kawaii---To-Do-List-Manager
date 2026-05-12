@@ -195,125 +195,140 @@ document.addEventListener('DOMContentLoaded', () => {
   PWA.initTouchFeedback();
   document.getElementById('mobileInstallBtn')?.addEventListener('click', () => PWA.triggerInstall());
 
-  const tasks = DB.getTasks(session.uid);
-  const meta  = DB.getMeta(session.uid);
+  // Load from cache first, then refresh from Firestore
+  let tasks = DB.getTasks(session.uid);
+  let meta  = DB.getMeta(session.uid);
 
-  // ---- Profile hero ----
-  document.getElementById('profileAvatar').textContent = session.avatar || '🐱';
-  document.getElementById('profileName').textContent = session.username;
-  document.getElementById('profileEmailDisplay').textContent = session.email;
+  const renderProfile = (tasks, meta) => {
+    // ---- Profile hero ----
+    // Check for uploaded photo
+    const photoData = localStorage.getItem(`pixido_photo_${session.uid}`);
+    const avatarEl = document.getElementById('profileAvatar');
+    if (photoData) {
+      avatarEl.innerHTML = `<img src="${photoData}" style="width:80px;height:80px;object-fit:cover;border:3px solid #2d2d2d;border-radius:0;">`;
+      avatarEl.style.fontSize = 'unset';
+    } else {
+      avatarEl.textContent = session.avatar || '🐱';
+    }
+    document.getElementById('profileName').textContent = session.username;
+    document.getElementById('profileEmailDisplay').textContent = session.email;
 
-  // Level calculation (every 100 points = 1 level)
-  const level = Math.max(1, Math.floor((meta.points || 0) / 100) + 1);
-  document.getElementById('profileLevel').textContent = 'Lv.' + level;
+    // Level calculation (every 100 points = 1 level)
+    const level = Math.max(1, Math.floor((meta.points || 0) / 100) + 1);
+    document.getElementById('profileLevel').textContent = 'Lv.' + level;
 
-  // ---- Stats ----
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(t => t.done).length;
-  const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    // ---- Stats ----
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(t => t.done).length;
+    const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  document.getElementById('statTotalTasks').textContent = totalTasks;
-  document.getElementById('statCompleted').textContent = meta.completedTotal || 0;
-  document.getElementById('statStreak').textContent = meta.streak || 0;
-  document.getElementById('statPoints').textContent = meta.points || 0;
-  document.getElementById('statCompletionRate').textContent = completionRate + '%';
+    document.getElementById('statTotalTasks').textContent = totalTasks;
+    document.getElementById('statCompleted').textContent = meta.completedTotal || 0;
+    document.getElementById('statStreak').textContent = meta.streak || 0;
+    document.getElementById('statPoints').textContent = meta.points || 0;
+    document.getElementById('statCompletionRate').textContent = completionRate + '%';
 
-  // ---- Profile badges row ----
-  const badgesRow = document.getElementById('profileBadgesRow');
-  const earnedBadges = [];
-  if ((meta.completedTotal || 0) >= 1)  earnedBadges.push('⭐ First Star');
-  if ((meta.completedTotal || 0) >= 5)  earnedBadges.push('🌸 Bloomer');
-  if ((meta.completedTotal || 0) >= 10) earnedBadges.push('🔥 On Fire');
-  if ((meta.streak || 0) >= 3)          earnedBadges.push('💎 Streak Master');
-  if (level >= 5)                        earnedBadges.push('🏆 Level 5');
-  if (earnedBadges.length === 0)         earnedBadges.push('🌱 Just Starting');
+    // ---- Profile badges row ----
+    const badgesRow = document.getElementById('profileBadgesRow');
+    const earnedBadges = [];
+    if ((meta.completedTotal || 0) >= 1)  earnedBadges.push('⭐ First Star');
+    if ((meta.completedTotal || 0) >= 5)  earnedBadges.push('🌸 Bloomer');
+    if ((meta.completedTotal || 0) >= 10) earnedBadges.push('🔥 On Fire');
+    if ((meta.streak || 0) >= 3)          earnedBadges.push('💎 Streak Master');
+    if (level >= 5)                        earnedBadges.push('🏆 Level 5');
+    if (earnedBadges.length === 0)         earnedBadges.push('🌱 Just Starting');
+    badgesRow.innerHTML = earnedBadges.map(b => `<span class="profile-badge">${b}</span>`).join('');
 
-  badgesRow.innerHTML = earnedBadges.map(b =>
-    `<span class="profile-badge">${b}</span>`
-  ).join('');
+    // ---- Achievements grid ----
+    const ACHIEVEMENTS = [
+      { icon: '⭐', name: 'First Star',    desc: 'Complete your first task',  req: (meta.completedTotal || 0) >= 1 },
+      { icon: '🌸', name: 'Bloomer',       desc: 'Complete 5 tasks',           req: (meta.completedTotal || 0) >= 5 },
+      { icon: '🔥', name: 'On Fire',       desc: 'Complete 10 tasks',          req: (meta.completedTotal || 0) >= 10 },
+      { icon: '💫', name: 'Superstar',     desc: 'Complete 20 tasks',          req: (meta.completedTotal || 0) >= 20 },
+      { icon: '🏆', name: 'Champion',      desc: 'Complete 50 tasks',          req: (meta.completedTotal || 0) >= 50 },
+      { icon: '💎', name: 'Streak Master', desc: '3 day streak',               req: (meta.streak || 0) >= 3 },
+      { icon: '🌟', name: 'Week Warrior',  desc: '7 day streak',               req: (meta.streak || 0) >= 7 },
+      { icon: '💰', name: 'Point Hoarder', desc: 'Earn 100 points',            req: (meta.points || 0) >= 100 },
+      { icon: '🎖️', name: 'Level 5',       desc: 'Reach level 5',             req: level >= 5 },
+      { icon: '🗂️', name: 'Organizer',     desc: 'Use all 4 categories',      req: ['personal','work','study','health'].every(c => tasks.some(t => t.category === c)) },
+    ];
+    document.getElementById('achievementsGrid').innerHTML = ACHIEVEMENTS.map(a => `
+      <div class="achievement-card ${a.req ? 'unlocked' : 'locked'}">
+        <span class="achievement-icon">${a.icon}</span>
+        <div class="achievement-name">${a.name}</div>
+        <div class="achievement-desc">${a.desc}</div>
+      </div>`).join('');
 
-  // ---- Achievements grid ----
-  const ACHIEVEMENTS = [
-    { id: 'first',   icon: '⭐', name: 'First Star',    desc: 'Complete your first task',    req: (meta.completedTotal || 0) >= 1 },
-    { id: 'five',    icon: '🌸', name: 'Bloomer',       desc: 'Complete 5 tasks',             req: (meta.completedTotal || 0) >= 5 },
-    { id: 'ten',     icon: '🔥', name: 'On Fire',       desc: 'Complete 10 tasks',            req: (meta.completedTotal || 0) >= 10 },
-    { id: 'twenty',  icon: '💫', name: 'Superstar',     desc: 'Complete 20 tasks',            req: (meta.completedTotal || 0) >= 20 },
-    { id: 'fifty',   icon: '🏆', name: 'Champion',      desc: 'Complete 50 tasks',            req: (meta.completedTotal || 0) >= 50 },
-    { id: 'streak3', icon: '💎', name: 'Streak Master', desc: '3 day streak',                 req: (meta.streak || 0) >= 3 },
-    { id: 'streak7', icon: '🌟', name: 'Week Warrior',  desc: '7 day streak',                 req: (meta.streak || 0) >= 7 },
-    { id: 'points',  icon: '💰', name: 'Point Hoarder', desc: 'Earn 100 points',              req: (meta.points || 0) >= 100 },
-    { id: 'level5',  icon: '🎖️', name: 'Level 5',       desc: 'Reach level 5',               req: level >= 5 },
-    { id: 'allcat',  icon: '🗂️', name: 'Organizer',     desc: 'Use all 4 categories',        req: ['personal','work','study','health'].every(c => tasks.some(t => t.category === c)) },
-  ];
+    // ---- Streak calendar (last 28 days) ----
+    const calendar = document.getElementById('streakCalendar');
+    calendar.innerHTML = '';
+    const today = new Date();
+    const activeDates = new Set();
+    // Build set of active dates based on streak count
+    if (meta.lastActive && meta.streak > 0) {
+      const last = new Date(meta.lastActive);
+      for (let i = 0; i < meta.streak; i++) {
+        const d = new Date(last);
+        d.setDate(last.getDate() - i);
+        activeDates.add(d.toDateString());
+      }
+    }
+    for (let i = 27; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const isToday = d.toDateString() === today.toDateString();
+      const isActive = activeDates.has(d.toDateString());
+      const cell = document.createElement('div');
+      cell.className = 'streak-day' + (isToday ? ' today' : isActive ? ' active' : '');
+      cell.title = d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+      calendar.appendChild(cell);
+    }
 
-  document.getElementById('achievementsGrid').innerHTML = ACHIEVEMENTS.map(a => `
-    <div class="achievement-card ${a.req ? 'unlocked' : 'locked'}">
-      <span class="achievement-icon">${a.icon}</span>
-      <div class="achievement-name">${a.name}</div>
-      <div class="achievement-desc">${a.desc}</div>
-    </div>
-  `).join('');
-
-  // ---- Streak calendar (last 28 days) ----
-  const calendar = document.getElementById('streakCalendar');
-  const today = new Date();
-  const lastActive = meta.lastActive ? new Date(meta.lastActive) : null;
-
-  for (let i = 27; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const isToday = d.toDateString() === today.toDateString();
-    const isActive = lastActive && Math.abs(d - lastActive) < 86400000 * (meta.streak || 1);
-
-    const cell = document.createElement('div');
-    cell.className = 'streak-day' + (isToday ? ' today' : isActive && i < (meta.streak || 0) ? ' active' : '');
-    cell.title = d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
-    calendar.appendChild(cell);
-  }
-
-  // ---- Category bars ----
-  const CATS = [
-    { key: 'personal', label: 'Personal', color: '#c7ceea' },
-    { key: 'work',     label: 'Work',     color: '#a8e6cf' },
-    { key: 'study',    label: 'Study',    color: '#ffd93d' },
-    { key: 'health',   label: 'Health',   color: '#ffb3ba' },
-  ];
-  const maxCount = Math.max(1, ...CATS.map(c => tasks.filter(t => t.category === c.key).length));
-
-  document.getElementById('categoryBars').innerHTML = CATS.map(c => {
-    const count = tasks.filter(t => t.category === c.key).length;
-    const pct = Math.round((count / maxCount) * 100);
-    return `
-      <div class="prod-bar-wrap">
+    // ---- Category bars ----
+    const CATS = [
+      { key: 'personal', label: 'Personal', color: '#c7ceea' },
+      { key: 'work',     label: 'Work',     color: '#a8e6cf' },
+      { key: 'study',    label: 'Study',    color: '#ffd93d' },
+      { key: 'health',   label: 'Health',   color: '#ffb3ba' },
+    ];
+    const maxCount = Math.max(1, ...CATS.map(c => tasks.filter(t => t.category === c.key).length));
+    document.getElementById('categoryBars').innerHTML = CATS.map(c => {
+      const count = tasks.filter(t => t.category === c.key).length;
+      const pct = Math.round((count / maxCount) * 100);
+      return `<div class="prod-bar-wrap">
         <div class="prod-bar" style="height:${Math.max(4, pct * 0.7)}px;background:linear-gradient(180deg,${c.color},#ddd)"></div>
         <div class="prod-bar-label">${c.label}</div>
         <div class="prod-bar-label" style="color:#555">${count}</div>
       </div>`;
-  }).join('');
+    }).join('');
 
-  // ---- Recent completed tasks ----
-  const recentDone = tasks
-    .filter(t => t.done)
-    .sort((a, b) => new Date(b.created) - new Date(a.created))
-    .slice(0, 5);
-
-  const recentEl = document.getElementById('recentActivity');
-  if (recentDone.length === 0) {
-    recentEl.innerHTML = `<p style="font-size:11px;color:#aaa;font-family:'Press Start 2P',monospace;text-align:center;padding:20px">No completed tasks yet!<br>🌸 Start checking things off!</p>`;
-  } else {
-    recentEl.innerHTML = recentDone.map(t => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid #a8e6cf;background:#f0fdf5;box-shadow:0 2px 0 #ccc">
-        <span style="font-size:16px">✅</span>
-        <div style="flex:1">
-          <div style="font-size:12px;text-decoration:line-through;opacity:0.7">${t.text}</div>
-          <div style="font-size:9px;color:#aaa;font-family:'Press Start 2P',monospace;margin-top:3px">
-            ${new Date(t.created).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })}
+    // ---- Recent completed tasks ----
+    const recentDone = tasks.filter(t => t.done)
+      .sort((a, b) => new Date(b.created) - new Date(a.created)).slice(0, 5);
+    const recentEl = document.getElementById('recentActivity');
+    if (recentDone.length === 0) {
+      recentEl.innerHTML = `<p style="font-size:11px;color:#aaa;font-family:'Press Start 2P',monospace;text-align:center;padding:20px">No completed tasks yet!<br>🌸 Start checking things off!</p>`;
+    } else {
+      recentEl.innerHTML = recentDone.map(t => `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid #a8e6cf;background:#f0fdf5;box-shadow:0 2px 0 #ccc;margin-bottom:4px">
+          <span style="font-size:18px">✅</span>
+          <div style="flex:1">
+            <div style="font-size:12px;text-decoration:line-through;opacity:0.7;line-height:1.5">${t.text}</div>
+            <div style="font-size:9px;color:#aaa;font-family:'Press Start 2P',monospace;margin-top:4px">
+              ${new Date(t.created).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </div>
           </div>
-        </div>
-        <span style="font-family:'Press Start 2P',monospace;font-size:6px;padding:2px 6px;border:1px solid #ccc;background:var(--pink-pale)">${t.category}</span>
-      </div>
-    `).join('');
-  }
+          <span style="font-family:'Press Start 2P',monospace;font-size:6px;padding:3px 8px;border:1px solid #ccc;background:var(--pink-pale)">${t.category}</span>
+        </div>`).join('');
+    }
+  };
+
+  // Render with cached data immediately
+  renderProfile(tasks, meta);
+
+  // Then refresh from Firestore
+  Promise.all([DB.fetchTasks(session.uid), DB.fetchMeta(session.uid)])
+    .then(([freshTasks, freshMeta]) => renderProfile(freshTasks, freshMeta));
 });
 </script>
 </body>

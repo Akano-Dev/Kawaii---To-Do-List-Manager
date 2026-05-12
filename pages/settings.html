@@ -228,7 +228,13 @@
 
           <div>
             <div class="setting-label" style="margin-bottom:8px">Choose Avatar</div>
-            <div id="avatarPicker" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+            <div id="avatarPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"></div>
+            <div class="setting-label" style="margin-bottom:8px">Or Upload Photo</div>
+            <label class="profile-photo-upload" id="photoUploadLabel">
+              <input type="file" id="profilePhotoInput" accept="image/*" style="display:none">
+              <span id="photoPreview" style="font-size:40px">📷</span>
+              <span style="font-family:'Press Start 2P',monospace;font-size:6px;margin-top:4px">Tap to upload</span>
+            </label>
           </div>
 
           <div class="setting-row">
@@ -359,12 +365,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---- Theme swatches ----
-  const activeTheme = settings.theme || 'kawaii';
+  const activeTheme = settings.theme || localStorage.getItem('pixido_theme') || 'kawaii';
   document.querySelectorAll('.theme-swatch').forEach(sw => {
     sw.classList.toggle('active', sw.dataset.theme === activeTheme);
     sw.addEventListener('click', () => {
       document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
       sw.classList.add('active');
+      // Apply theme LIVE immediately
+      ThemeManager.apply(sw.dataset.theme);
+      notify('Theme applied! 🎨', '✨');
     });
   });
 
@@ -396,6 +405,21 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.style.background = 'var(--pink-pale)';
     });
     picker.appendChild(btn);
+  });
+
+  // ---- Profile photo upload ----
+  let profilePhotoDataUrl = null;
+  document.getElementById('profilePhotoInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 500 * 1024) { notify('Image too large! Max 500KB 📷', '❌'); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      profilePhotoDataUrl = ev.target.result;
+      document.getElementById('photoPreview').innerHTML = `<img src="${profilePhotoDataUrl}" style="width:48px;height:48px;object-fit:cover;border:2px solid #2d2d2d;">`;
+      notify('Photo ready! Save to apply 💾', '📷');
+    };
+    reader.readAsDataURL(file);
   });
 
   // ---- Volume sliders ----
@@ -469,28 +493,26 @@ document.addEventListener('DOMContentLoaded', () => {
       background: document.querySelector('.bg-option.active')?.dataset.bg || 'gradient',
     };
     DB.saveSettings(newSettings);
+    ThemeManager.apply(newSettings.theme);
 
-    // Update username/avatar if changed
+    // Update username/avatar via Firebase
     const newUsername = document.getElementById('settingsUsername').value.trim();
-    if (newUsername && newUsername !== session.username) {
-      const users = DB.getUsers();
-      if (users[session.uid]) {
-        users[session.uid].username = newUsername;
-        DB.saveUsers(users);
-        const newSession = { ...session, username: newUsername, avatar: selectedAvatar };
-        DB.saveSession(newSession);
-      }
+    const updates = {};
+    if (newUsername && newUsername !== session.username) updates.username = newUsername;
+    if (selectedAvatar !== session.avatar) updates.avatar = selectedAvatar;
+    // Store photo in localStorage (base64) — small images only
+    if (profilePhotoDataUrl) {
+      localStorage.setItem(`pixido_photo_${session.uid}`, profilePhotoDataUrl);
+      updates.hasPhoto = true;
     }
 
-    // Update avatar
-    if (selectedAvatar !== session.avatar) {
-      const users = DB.getUsers();
-      if (users[session.uid]) {
-        users[session.uid].avatar = selectedAvatar;
-        DB.saveUsers(users);
-        const newSession = { ...session, avatar: selectedAvatar };
+    if (Object.keys(updates).length > 0) {
+      DB.updateProfile(session.uid, updates).then(() => {
+        // Refresh session cache
+        const newSession = { ...DB.getSession(), ...updates };
         DB.saveSession(newSession);
-      }
+        notify('Profile updated! 💾', '✨');
+      });
     }
 
     spawnDeco('floatingHearts', ['💖','⭐','✨'], 4);
