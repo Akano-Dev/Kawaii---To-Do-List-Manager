@@ -1,9 +1,10 @@
 /**
  * PixiDo Service Worker
  * Caches all static assets for full offline support.
+ * BUMP THIS VERSION to force cache refresh on all clients.
  */
 
-const CACHE_NAME    = 'pixido-v1';
+const CACHE_NAME    = 'pixido-v3';
 const OFFLINE_URL   = '/offline.html';
 
 // Everything to pre-cache on install
@@ -62,7 +63,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // ============================================================
-//  FETCH — serve from cache, fall back to network
+//  FETCH — network-first for HTML, cache-first for assets
 // ============================================================
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -90,39 +91,44 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ---- App shell: cache-first, network fallback ----
   if (url.origin === self.location.origin) {
-    event.respondWith(
-      caches.match(request).then(async (cached) => {
-        if (cached) return cached;
+    const isHTML = request.headers.get('accept')?.includes('text/html') ||
+                   url.pathname.endsWith('.html') || url.pathname === '/';
+    const isAsset = url.pathname.match(/\.(css|js|png|jpg|svg|ico|woff2?)$/);
 
-        try {
-          const response = await fetch(request);
-          // Cache successful responses for HTML/CSS/JS/images
-          if (response.ok) {
-            const ct = response.headers.get('content-type') || '';
-            if (
-              ct.includes('text/html') ||
-              ct.includes('text/css') ||
-              ct.includes('javascript') ||
-              ct.includes('image/') ||
-              ct.includes('font/')
-            ) {
-              const cache = await caches.open(CACHE_NAME);
-              cache.put(request, response.clone());
+    if (isHTML) {
+      // ---- HTML pages: NETWORK-FIRST so updates always show ----
+      event.respondWith(
+        fetch(request)
+          .then(response => {
+            // Cache the fresh response
+            if (response.ok) {
+              const clone = response.clone();
+              caches.open(CACHE_NAME).then(c => c.put(request, clone));
             }
-          }
-          return response;
-        } catch {
-          // Offline fallback
-          if (request.headers.get('accept')?.includes('text/html')) {
-            return caches.match(OFFLINE_URL);
-          }
-          return new Response('Offline', { status: 503 });
-        }
-      })
-    );
-    return;
+            return response;
+          })
+          .catch(() => {
+            // Offline: serve cached version or offline page
+            return caches.match(request)
+              .then(cached => cached || caches.match(OFFLINE_URL));
+          })
+      );
+    } else if (isAsset) {
+      // ---- Static assets (CSS/JS/images): cache-first, update in background ----
+      event.respondWith(
+        caches.match(request).then(cached => {
+          const fetchPromise = fetch(request).then(response => {
+            if (response.ok) {
+              caches.open(CACHE_NAME).then(c => c.put(request, response.clone()));
+            }
+            return response;
+          });
+          return cached || fetchPromise;
+        })
+      );
+    }
+    // All other requests: let browser handle normally
   }
 });
 
